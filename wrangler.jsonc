@@ -1,0 +1,8 @@
+// Cloudflare（Workers の静的サイト）用の設定。ビルドで dist/ に公開ファイルだけを集め、それを配る
+{
+  "name": "4kai-ijounashi",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
