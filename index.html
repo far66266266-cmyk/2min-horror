@@ -58,6 +58,7 @@ h1{font-family:"Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",ser
 #share .x{border-color:#5a5f5b}
 #end-log{font-family:"MS Gothic","Osaka-Mono",monospace;font-size:13px;color:#b9c2b8;line-height:1.9;text-align:left;letter-spacing:.05em}
 #end-log .me{color:#d98a7a}
+#end-log .mj{color:#8e9a90}
 #end-chain{font-size:13px;color:var(--dim)}
 #toast{font-size:12px;color:var(--accent);height:1em}
 </style>
@@ -245,9 +246,47 @@ function resolve(a){
 /* ===== 字幕・タイムライン ===== */
 const radio = (s, v) => ({ who:'無線', s, v });
 const pad2 = n => String(n).padStart(2, '0');
-function ghostLabel(i){
-  const r = chain.log[chain.log.length - (CYCLE - 1) + i];
-  return (i + 1) + '人目　' + (r ? pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件' : '記録なし');
+// 前任者の名前：記録（時刻・見逃し件数・何人目か）からありがちな名前を決め、文字化けさせて出す。
+// 名前は入力させないし、どこにも保存しない。同じ記録なら誰の画面でも同じ化け方になる
+const SURNAMES = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '佐々木', '松本', '井上', '木村', '清水', '林', '斎藤', '山口'];
+const GIVEN = ['美咲', '翔太', '陽菜', '大輔', '由美', '健一', '彩', '拓也', '真由美', '直樹', '恵', '和也', '早苗', '誠', '千尋', '浩二'];
+function mojibake(text){
+  // UTF-8 のバイト列を Shift_JIS として読む（昔ながらの文字化け）
+  try { return new TextDecoder('shift_jis').decode(new TextEncoder().encode(text)).replace(/\uFFFD/g, '・'); }
+  catch(e){ return Array.from(text, () => '・').join(''); }
+}
+function recordName(r, n){
+  // 記録から決まる乱数（同じ記録なら同じ名前、少し違えば別の名前）
+  let h = (r ? r[0] * 3600 + r[1] * 60 + r[2] * 7 : 977) + n * 7919;
+  h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h = (h ^ (h >>> 16)) >>> 0;
+  return brokenName(SURNAMES[h % SURNAMES.length] + GIVEN[(h >>> 8) % GIVEN.length], h);
+}
+function realName(r, n){
+  let h = (r ? r[0] * 3600 + r[1] * 60 + r[2] * 7 : 977) + n * 7919;
+  h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h = (h ^ (h >>> 16)) >>> 0;
+  return SURNAMES[h % SURNAMES.length] + GIVEN[(h >>> 8) % GIVEN.length];
+}
+// 文字化けの上に、さらに壊れ方を重ねる（同じ名前なら同じ壊れ方）
+const GLITCH = ['█', '▓', '▒', '░', '〓', '■', '�', 'ﾞ', 'ﾟ', 'ｷ', 'ﾂ', '繧', '縺', '譁', '蟄', '・'];
+const MARKS = ['̶', '̷', '̸', '̴', '̵'];
+function seeded(h){ return () => { h = (h + 0x6D2B79F5) >>> 0; let t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function brokenName(name, h){
+  const rnd = seeded(h), out = [];
+  for (const ch of mojibake(name)){
+    const x = rnd();
+    if (x < .22) out.push(GLITCH[rnd() * GLITCH.length | 0]);           // 置き換わる
+    else if (x < .32) out.push(ch, ch, rnd() < .5 ? ch : '');           // 繰り返す
+    else out.push(ch);
+    if (rnd() < .18) out.push(MARKS[rnd() * MARKS.length | 0]);        // 線が重なる
+  }
+  const real = Array.from(name);                                       // 元の名前の漢字が1文字もれる
+  out.splice(1 + (rnd() * (out.length - 1) | 0), 0, real[rnd() * real.length | 0]);
+  return out.join('');
+}
+const nameSpan = (r, n) => '<span class="mj" data-real="' + realName(r, n) + '">' + recordName(r, n) + '</span>';
+function ghostLabel(i, html){
+  const r = chain.log[chain.log.length - (CYCLE - 1) + i], n = i + 1;
+  return n + '人目　' + (r ? pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件' : '記録なし') + '　' + (html ? nameSpan(r, n) : recordName(r, n));
 }
 // 場面ごとの言い換え [字幕, 声]。毎回どれか1つを選ぶ
 const RADIO_LINES = {
@@ -1311,7 +1350,7 @@ function showEnding(){
   if (LAST){
     $('#end-head').textContent = '04:44　交代は、来ませんでした。';
     logEl.hidden = false;
-    logEl.innerHTML = Array.from({ length: CYCLE - 1 }, (_, i) => ghostLabel(i)).join('<br>') +
+    logEl.innerHTML = Array.from({ length: CYCLE - 1 }, (_, i) => ghostLabel(i, true)).join('<br>') +
       '<br><span class="me">' + CYCLE + '人目　' + pad2(mine[0]) + ':' + pad2(mine[1]) + '　あなた</span>';
     $('#end-chain').textContent = 'あなたが、9人目です。';
     $('#end-hand').textContent = '次の人からは、また1人目に戻ります。';
@@ -1320,8 +1359,8 @@ function showEnding(){
     $('#end-head').textContent = '04:44　交代しました。';
     const prev = chain.log.slice(-(POS - 1)), first = POS - prev.length;
     const rows = [];
-    for (let n = 1; n < first; n++) rows.push(n + '人目　記録なし');
-    prev.forEach((r, i) => rows.push((first + i) + '人目　' + pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件'));
+    for (let n = 1; n < first; n++) rows.push(n + '人目　記録なし　' + nameSpan(null, n));
+    prev.forEach((r, i) => rows.push((first + i) + '人目　' + pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件　' + nameSpan(r, first + i)));
     rows.push('<span class="me">' + POS + '人目　' + pad2(mine[0]) + ':' + pad2(mine[1]) + '　あなた</span>');
     for (let n = POS + 1; n <= CYCLE; n++) rows.push(n + '人目　――');
     logEl.hidden = false; logEl.innerHTML = rows.join('<br>');
@@ -1329,6 +1368,7 @@ function showEnding(){
     $('#end-hand').textContent = 'このモニターは、次の人に引き継いでください。';
     $('#share-x').textContent = 'Xで引き継ぐ';
   }
+  flickerNames();
   const base = location.href.split('#')[0].split('?')[0];
   const url = base + '?k=' + encChain({ n: chain.n + 1, log: LAST ? [] : chain.log.concat([mine]).slice(-(CYCLE - 1)) });
   const msg = LAST
@@ -1343,6 +1383,27 @@ function showEnding(){
   const end = $('#ending'); end.classList.remove('hidden');
   end.querySelectorAll('.line').forEach(el => { el.classList.remove('on'); setTimeout(() => el.classList.add('on'), +el.dataset.d + 400); });
   document.title = '4階、異常なし。';
+}
+let flickerTimer;
+function flickerNames(){
+  clearInterval(flickerTimer);
+  const spans = [...document.querySelectorAll('#end-log .mj')];
+  spans.forEach(sp => sp.dataset.base = sp.textContent);
+  if (!spans.length) return;
+  flickerTimer = setInterval(() => {
+    if ($('#ending').classList.contains('hidden')){ clearInterval(flickerTimer); return; }
+    for (let m = 0; m < 1 + (Math.random() * 2 | 0); m++){
+      const sp = spans[Math.random() * spans.length | 0], base = sp.dataset.base, x = Math.random();
+      if (x < .07) sp.textContent = sp.dataset.real;                     // 一瞬だけ、本当の名前
+      else if (x < .25) sp.textContent = Array.from(base, () => GLITCH[Math.random() * GLITCH.length | 0]).join('');
+      else {
+        const chars = Array.from(base);
+        for (let k = 0; k < 1 + (Math.random() * 3 | 0); k++) chars[Math.random() * chars.length | 0] = GLITCH[Math.random() * GLITCH.length | 0];
+        sp.textContent = chars.join('');
+      }
+      setTimeout(() => { sp.textContent = base; }, x < .07 ? 140 : 90 + Math.random() * 160);
+    }
+  }, 260);
 }
 function fallbackCopy(text, done){
   const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
