@@ -1,0 +1,1359 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>4階、異常なし。</title>
+<meta name="description" content="深夜の警備バイト、交代直前のモニター。モニターに異常があれば報告するだけ。驚かせる演出なしの45秒ホラー。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="4階、異常なし。">
+<meta property="og:description" content="深夜の警備バイト、交代直前のモニター。モニターに異常があれば報告するだけ。">
+<meta property="og:url" content="https://far66266266-cmyk.github.io/2min-horror/">
+<meta property="og:image" content="https://far66266266-cmyk.github.io/2min-horror/og-shift.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--fg:#c9d1c8;--dim:#6f7a70;--accent:#9fb8a4;--warn:#c25a4a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:var(--fg);font-family:"Yu Gothic","YuGothic","Hiragino Sans","Noto Sans JP",sans-serif;-webkit-tap-highlight-color:transparent}
+body{overflow:hidden;display:flex;align-items:center;justify-content:center}
+button{font:inherit;color:inherit;cursor:pointer}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;text-align:center;gap:18px;background:#000;transition:opacity 1.2s}
+.hidden{opacity:0;pointer-events:none}
+h1{font-family:"Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;font-weight:500;font-size:clamp(28px,7vw,44px);letter-spacing:.12em}
+.lead{line-height:2;font-size:15px;color:var(--fg)}
+.notes{list-style:none;font-size:12px;color:var(--dim);line-height:1.9}
+.primary{border:1px solid #3c463e;background:#0b0e0c;padding:12px 34px;letter-spacing:.2em;font-size:15px;border-radius:2px;transition:background .3s}
+.primary:hover,.primary:focus-visible{background:#18201b;outline:none}
+.small{font-size:11px;color:var(--dim)}
+
+#game{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(100vw - 32px,760px)}
+#monitor{position:relative;width:100%;aspect-ratio:4/3;max-height:calc(100vh - 190px);background:#000;border:10px solid #111311;border-radius:14px;box-shadow:0 0 0 1px #222,0 0 60px rgba(120,150,130,.06);overflow:hidden}
+#c{width:100%;height:100%;display:block;filter:blur(.35px) contrast(1.08)}
+#crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.22) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.osd{position:absolute;font-family:"MS Gothic","Osaka-Mono",monospace;font-size:clamp(10px,2.3vw,15px);color:#e4ebe2;text-shadow:0 0 3px rgba(0,0,0,.9);letter-spacing:.06em;pointer-events:none;white-space:nowrap}
+#osd-cam{top:4%;left:4%}
+#osd-rec{top:4%;right:4%}
+#osd-rec i{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:#c33;margin-right:.4em;vertical-align:.05em}
+#osd-time{bottom:4%;left:4%}
+#osd-status{top:11%;right:4%;font-size:clamp(9px,2vw,13px);color:#b8c4b7}
+#osd-status.bad{color:#d0705f}
+#fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 2.5s;display:flex;align-items:center;justify-content:center}
+.nosig{font-family:"MS Gothic","Osaka-Mono",monospace;color:#8fa596;font-size:clamp(14px,3.4vw,22px);letter-spacing:.3em}
+#monitor{will-change:transform}
+#sub{min-height:3.6em;font-size:clamp(13px,3.6vw,16px);line-height:1.8;color:var(--fg);text-align:center;padding:0 8px}
+#sub .who{color:var(--accent);font-size:.85em;margin-right:.4em}
+#sub.inner{color:#d9c9c3;font-style:italic}
+#report{width:min(100%,320px);padding:14px 0;font-size:17px;letter-spacing:.5em;text-indent:.5em;background:#140c0b;border:1px solid #4a2a25;color:#e7c9c2;border-radius:3px;transition:transform .08s,background .2s}
+#report:active{transform:scale(.97);background:#251412}
+#report:disabled{opacity:.35;cursor:default}
+
+#ending .line{opacity:0;transform:translateY(4px);transition:opacity 1.6s,transform 1.6s;line-height:1.9}
+#ending .line.on{opacity:1;transform:none}
+#ending .big{font-family:"Yu Mincho","YuMincho","Hiragino Mincho ProN",serif;font-size:clamp(20px,5vw,28px);letter-spacing:.1em}
+#ending .stat{font-size:13px;color:var(--dim);letter-spacing:.08em}
+#share{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:420px}
+#share button,#share a{border:1px solid #333a34;background:#0b0e0c;padding:10px 16px;font-size:13px;border-radius:2px;color:var(--fg);text-decoration:none}
+#share .x{border-color:#5a5f5b}
+#end-log{font-family:"MS Gothic","Osaka-Mono",monospace;font-size:13px;color:#b9c2b8;line-height:1.9;text-align:left;letter-spacing:.05em}
+#end-log .me{color:#d98a7a}
+#end-chain{font-size:13px;color:var(--dim)}
+#toast{font-size:12px;color:var(--accent);height:1em}
+</style>
+</head>
+<body>
+
+
+<section id="title" class="screen">
+  <h1>4階、異常なし。</h1>
+  <p class="lead">深夜の警備アルバイト。<br>交代まで、あと少し。<br>モニターに異常があれば［報告］を押してください。<br>それだけです。</p>
+  <ul class="notes">
+    <li>プレイ時間 約45秒 ／ ヘッドホン推奨</li>
+    <li>大きな音や、急に驚かせる演出はありません</li>
+    <li>映像が乱れる演出があります（激しい点滅はありません）</li>
+  </ul>
+  <p class="small" id="badge"></p>
+  <button class="primary" id="start">勤務につく</button>
+  <p class="small">操作：［報告］ボタン（PCはスペースキーでも可）</p>
+</section>
+
+<div id="game" class="hidden" aria-hidden="true">
+  <div id="monitor">
+    <canvas id="c" width="320" height="240"></canvas>
+    <div id="scan"></div>
+    <canvas id="crack"></canvas>
+    <div class="osd" id="osd-cam">CAM 03　4F 東廊下</div>
+    <div class="osd" id="osd-rec"><i></i>REC</div>
+    <div class="osd" id="osd-status"></div>
+    <div class="osd" id="osd-time"></div>
+    <div id="fade"></div>
+  </div>
+  <div id="sub" aria-live="polite"></div>
+  <button id="report">報告</button>
+</div>
+
+<section id="ending" class="screen hidden" aria-live="polite">
+  <p class="line big" data-d="0" id="end-head">04:44　交代しました。</p>
+  <p class="line stat" data-d="1200" id="end-stat"></p>
+  <p class="line" data-d="2400" id="end-text"></p>
+  <div class="line" data-d="3600" id="end-log" hidden></div>
+  <p class="line" data-d="3600" id="end-chain"></p>
+  <p class="line" data-d="4800" id="end-hand">このモニターは、次の人に引き継いでください。</p>
+  <div class="line" data-d="5800" id="share">
+    <a class="x" id="share-x" target="_blank" rel="noopener">Xで引き継ぐ</a>
+    <button id="share-native" hidden>共有</button>
+    <button id="share-copy">リンクをコピー</button>
+    <button id="again">もう一度、勤務につく</button>
+  </div>
+  <p class="line" data-d="5800" id="toast"></p>
+</section>
+
+<noscript><p style="padding:20px">JavaScriptを有効にしてください。</p></noscript>
+
+<script>
+'use strict';
+/* ===== 設定 ===== */
+const W = 320, H = 240;
+/* ===== 引き継ぎ（シェアの連鎖） =====
+   リンクの ?k= に「何人目か」と、今の周回の前任者の記録（時:分・見逃し件数）を入れる。
+   推測で番号を飛ばされないよう、簡単な撹拌とチェックサムをかけている。 */
+const CYCLE = 9;
+const KEY = [0x5a, 0x13, 0xc7, 0x2e, 0x91, 0x44, 0xb8, 0x0d];
+function encChain(o){
+  const str = o.n + '|' + o.log.map(r => r.join(',')).join(';');
+  const b = Array.from(new TextEncoder().encode(str));
+  let sum = 0;
+  const x = b.map((v, i) => { sum = (sum + v * (i + 1)) % 251; return v ^ KEY[i % 8] ^ ((i * 37) & 255); });
+  x.push(sum);
+  return btoa(String.fromCharCode.apply(null, x)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decChain(k){
+  try {
+    if (!k) return null;
+    let b64 = k.replace(/-/g, '+').replace(/_/g, '/'); while (b64.length % 4) b64 += '=';
+    const x = Array.from(atob(b64), c => c.charCodeAt(0)), sum = x.pop();
+    let cs = 0;
+    const b = x.map((v, i) => { const o = v ^ KEY[i % 8] ^ ((i * 37) & 255); cs = (cs + o * (i + 1)) % 251; return o; });
+    if (cs !== sum) return null;
+    const [n, logs] = new TextDecoder().decode(new Uint8Array(b)).split('|');
+    const N = parseInt(n, 10); if (!(N >= 1 && N < 1e6)) return null;
+    const log = logs ? logs.split(';').map(r => r.split(',').map(Number)).filter(r => r.length === 3 && r.every(Number.isFinite)).slice(-(CYCLE - 1)) : [];
+    return { n: N, log };
+  } catch(e){ return null; }
+}
+const chain = decChain(new URLSearchParams(location.search).get('k')) || { n: 1, log: [] };
+const POS = (chain.n - 1) % CYCLE + 1;   // 周回の中で何人目か
+const LAST = POS === CYCLE;              // 9人目：交代が来ない
+
+/* ===== 時間割（秒）：毎回ランダム。通常版はおよそ45〜60秒、9人目はおよそ55〜60秒 ===== */
+let ROOM_AT, LAST_ROOM_AT, END_AT, TURN_AT;   // 警備室へ切り替わる／9人目が警備室へ／暗転／振り返りかける
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = arr => arr[Math.random() * arr.length | 0];
+const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const $ = s => document.querySelector(s);
+const cv = $('#c'), ctx = cv.getContext('2d');
+const mini = document.createElement('canvas'); mini.width = W; mini.height = H;
+const mctx = mini.getContext('2d');
+const frozen = document.createElement('canvas'); frozen.width = W; frozen.height = H;
+
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+};
+let plays = parseInt(store.get('f4_plays') || '0', 10) || 0;   // これまでに遊んだ回数（この端末）
+
+/* ===== ノイズ素材（あらかじめ生成） ===== */
+const noiseFrames = [];
+for (let n = 0; n < 6; n++) {
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d'), img = x.createImageData(W, H);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = Math.random() * 255;
+    img.data[i] = img.data[i+1] = img.data[i+2] = v; img.data[i+3] = 255;
+  }
+  x.putImageData(img, 0, 0); noiseFrames.push(c);
+}
+
+/* ===== 状態 ===== */
+let S;
+function resetState(){
+  S = {
+    t: 0, start: 0, running: false, phase: 'corridor',
+    anomalies: [],           // {type, t, reported}
+    correct: 0, falseReports: 0,
+    staticLevel: 0, staticUntil: 0, nextStatic: 6.5,
+    lamps: [ {z:2,on:1,fl:0}, {z:4.5,on:1,fl:0}, {z:7,on:1,fl:0}, {z:9.5,on:1,fl:0.6}, {z:12,on:1,fl:0} ],
+    figure: { active:false, z:12, x:0, tilt:0 },
+    lookedAway: false, hiddenAt: 0,
+    fired: new Set(), statusTimer: 0,
+    nextStep: 0, nextBreath: 0, ended: false,
+    roomAt: 0, ghosts: 0, ghostPhase: false,
+    glitch: 0, glitchUntil: 0, glitchPeak: 0, freezeUntil: 0,
+    replayFrom: 0, replayUntil: 0, replayAway: 0, hiddenClock: null, awayTotal: 0, awayCount: 0,
+    ghostNear: false, roomCrowd: 0, camLabel: 'CAM 03　4F 東廊下',
+    subShown: '', subSpan: null, subCorrupt: 0
+  };
+}
+resetState();
+
+/* ===== 異常 ===== */
+// 画面に重ねる異常と、床に置かれる物（写真）。物の高さはおよそのメートル
+const OVERLAYS = ['door_open', 'light_off', 'shoes', 'handprints', 'exit_red', 'peek', 'time_freeze', 'footprints'];
+const OBJECTS = { obj_chair: .85, obj_wheelchair: .95, obj_doll: .42, obj_umbrella: .9, obj_randoseru: .34, obj_balloon: 1.5, obj_box: .45 };
+let schedule = [];
+function buildSchedule(){
+  // 5〜7個。物は多くて3つまで
+  const n = Math.max(5, Math.min(7, Math.round((ROOM_AT - 6) / 5.2)));
+  const pool = shuffle(OVERLAYS).slice(0, n).concat(shuffle(Object.keys(OBJECTS)).slice(0, 2 + (Math.random() * 2 | 0)));
+  const kinds = shuffle(pool).slice(0, n - 2);
+  const t0 = 3.5, t1 = ROOM_AT - 4.5, step = (t1 - t0) / n;
+  const farAt = 1 + (Math.random() * (n - 3) | 0);   // 遠くの人影が出る順番もランダム
+  schedule = [];
+  for (let i = 0, k = 0; i < n; i++){
+    const t = t0 + step * i + rand(0, step * .55);
+    schedule.push({ t, type: i === farAt ? 'figure_far' : i === n - 1 ? 'figure_mid' : kinds[k++] });
+  }
+}
+const active = type => S.anomalies.some(a => a.type === type && !a.reported);
+const activeOf = type => S.anomalies.find(a => a.type === type && !a.reported);
+function spawn(type){
+  const a = { type, t: S.t, reported: false, v: {} };
+  // 同じ異常でも、毎回どこに出るかが変わる
+  if (type === 'door_open') a.v.door = pick(['leftNear', 'leftFar', 'rightFar', 'rightNear']);
+  if (type === 'peek') a.v.door = pick(['leftFar', 'rightFar']);
+  if (type === 'light_off') a.v.lamp = pick(['lamp1', 'lamp2', 'lamp3']);
+  if (type === 'handprints') Object.assign(a.v, { side: pick([-1, 1]), z0: rand(3.8, 5.5), n: 4 + (Math.random() * 3 | 0) });
+  if (type === 'footprints') Object.assign(a.v, { x: rand(-.5, .5), n: 7 + (Math.random() * 5 | 0) });
+  if (type === 'shoes') Object.assign(a.v, { x: rand(-.9, .9), z: rand(4.5, 8.5) });
+  if (OBJECTS[type]) Object.assign(a.v, { x: rand(-.95, .95), z: rand(4.4, Math.min(10, 4.4 + OBJECTS[type] * 6)), flip: Math.random() < .5 });   // 小さい物ほど手前に
+  S.anomalies.push(a);
+  if (!S.figure.stuck){
+    if (type === 'figure_far') Object.assign(S.figure, { active:true, z:rand(12, 13.5), x:rand(-.6, .6), tilt:0, kind:pick(['girl', 'girl', 'man', 'oldwoman', 'child']) });
+    if (type === 'figure_mid') Object.assign(S.figure, { active:true, z:rand(5, 6.5), x:pick([-1, 1]) * rand(.25, .7), tilt:pick([0, .35]), kind:pick(['girl', 'man', 'oldwoman', 'crawl', 'child']) });
+  }
+  doStatic(0.35, 0.5);
+}
+function resolve(a){
+  a.reported = true;
+  setTimeout(() => {
+    if (a.type.startsWith('figure') && !S.figure.stuck) S.figure.active = false;
+  }, 200);
+  doStatic(0.45, 0.8);
+}
+
+/* ===== 字幕・タイムライン ===== */
+const radio = (s, v) => ({ who:'無線', s, v });
+const pad2 = n => String(n).padStart(2, '0');
+function ghostLabel(i){
+  const r = chain.log[chain.log.length - (CYCLE - 1) + i];
+  return (i + 1) + '人目　' + (r ? pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件' : '記録なし');
+}
+// 場面ごとの言い換え [字幕, 声]。毎回どれか1つを選ぶ
+const RADIO_LINES = {
+  empty: [['4階は今日、誰もいないはずです。', 'r_empty'], ['4階のテナント、先月で全部退去してます。', 'r_b1'], ['そのフロア、もう電気も止めてあるはずなんですけど。', 'r_b2']],
+  saw:   [['……いま、何か映りました？', 'r_saw'], ['……今、そっちで物音、しませんでした？', 'r_c1'], ['……画面、少し暗くなってません？', 'r_c2']],
+  noreport: [['報告、一件も届いてないんですけど。', 'r_noreport'], ['報告ボタン、押してます？　こっち、何も来てなくて。', 'r_d1'], ['さっきから、報告が、全部空っぽで届くんです。', 'r_d2']],
+  broken: [['4階のカメラ、先月から壊れてるんですよ。', 'r_broken'], ['そのカメラ、配線、切ってあるはずなんですけど。', 'r_e1'], ['4階のカメラは、もう撤去したはずです。', 'r_e2']],
+  where: [['じゃあ、今見てるのはどこの映像ですか。', 'r_where'], ['……その映像、どこから来てるんですか。', 'r_f1'], ['じゃあ、あなたは、何を見てるんですか。', 'r_f2']],
+  dontturn: [['振り返らないでください。', 'r_dontturn'], ['動かないでください。', 'r_g1'], ['画面から、目を離さないでください。', 'r_g2']],
+  arrived: [['交代の人が、もう、そこに。', 'r_arrived'], ['……あなたの後ろの人、誰ですか。', 'r_h1'], ['交代の人、もう着いてますよね。', 'r_h2']],
+  extra: [['……すみません、ノイズがひどくて。', 'r_x1'], ['何かあったら、すぐ言ってくださいね。', 'r_x2'], ['前の担当の人も、この時間に連絡が途切れたんです。', 'r_x3']],
+};
+const line = (key, corrupt) => { const [t, v] = pick(RADIO_LINES[key]); return () => say(radio(t, v), false, corrupt || 0); };
+let TIMELINE = [];
+function buildRun(){
+  ROOM_AT = LAST ? rand(31, 36) : rand(32.5, 46);   // エンディングまで：通常 約45.3〜58.8秒、9人目 約53.6〜58.6秒
+  LAST_ROOM_AT = ROOM_AT + 11;
+  END_AT = LAST ? ROOM_AT + 20 : ROOM_AT + 10;
+  TURN_AT = LAST ? ROOM_AT + 17 : END_AT - 3.5;
+  // 廊下での無線：最初の2つは順番が入れ替わることがある。長い回は雑談がはさまる
+  const mid = shuffle(['empty', 'saw']);
+  const extras = shuffle(RADIO_LINES.extra).slice(0, ROOM_AT >= 43 ? 2 : ROOM_AT >= 37 ? 1 : 0);
+  const order = [mid[0], mid[1], 'noreport', 'broken'];
+  extras.forEach(x => order.splice(1 + (Math.random() * (order.length - 1) | 0), 0, x));
+  const prior = S.prior = plays;   // 今回より前に遊んだ回数
+  // 2回目・3回目・4回目・5回目以降だけの無線
+  const repeatLine = prior === 1 ? ['……あれ。またあなたですか。', 'r_again']
+    : prior === 2 ? ['……3回目ですね。前の2回のこと、覚えてます？', 'r_p3']
+    : prior === 3 ? ['……何回目ですか、これ。もう、来ないほうがいいですよ。', 'r_p4']
+    : prior >= 4 ? pick([['あなた、ずっとここにいるんじゃないですか。', 'r_p5a'], ['……交代の記録、全部あなたの名前になってるんですけど。', 'r_p5b'], ['もう、帰れないんですよ。', 'r_p5c']])
+    : null;
+  const t0 = repeatLine ? 10.2 : 6.2, t1 = ROOM_AT - 8.6, step = (t1 - t0) / Math.max(1, order.length - 1);
+  const corridorRadio = order.map((k, n) => {
+    const t = t0 + step * n + rand(-.4, .4);
+    if (k === 'noreport'){ S.failAfter = t; return [t, LAST ? () => say(radio('報告、届いてません。前の8人のも。', 'r_noreport9')) : line('noreport')]; }
+    if (Array.isArray(k)) return [t, () => say(radio(k[0], k[1]))];
+    return [t, line(k)];
+  });
+  TIMELINE = [
+    [1,   () => say(LAST ? radio('お疲れさまです。……9人目の方ですね。', 'r_9th') : radio('お疲れさまです。……' + POS + '人目の方ですね。', 'r_pos' + POS))],
+    [5.4, () => { if (repeatLine) say(radio(repeatLine[0], repeatLine[1])); }],
+    ...corridorRadio,
+    [ROOM_AT - 3.9, line('where', LAST ? .3 : 0)],
+    [ROOM_AT - .6, () => doStatic(1.6, 1)],
+    [ROOM_AT - .45, () => { S.preview = true; }],
+  ].concat(LAST ? [
+    // 9人目：廊下に前任者が一人ずつ立つ。交代は来ない。
+    [ROOM_AT, () => { S.ghostPhase = true; S.figure.active = false; S.figure.stuck = false; say(null); }],
+    ...Array.from({ length: CYCLE - 1 }, (_, i) => [ROOM_AT + .8 + i * .9, () => { S.ghosts = i + 1; doGlitch(.25, .6); say({ s: ghostLabel(i), now: true }, true); playVoice('g_kotai' + (i % 4), { c: .2 + i * .07, pan: (i % 2 ? .6 : -.6), gain: .35 + i * .05 }); }]),
+    [ROOM_AT + 7.9, () => doGlitch(.9, 1, true)],
+    [ROOM_AT + 8.4, () => { S.ghostNear = true; }],                       // 乱れが明けると、全員がすぐそこにいる
+    [ROOM_AT + 8.9, () => say(radio('交代の人は、もう来ません。', 'r_nomore'), false, .35)],
+    [ROOM_AT + 10.2, () => doGlitch(.9, 1, true)],
+    [LAST_ROOM_AT, () => { S.phase = 'room'; S.ghostPhase = false; S.ghosts = 0; S.camLabel = 'CAM 00　警備室'; say(null); }],
+    [LAST_ROOM_AT + .2, () => creak()],
+    [LAST_ROOM_AT + 2, () => say(radio('あなたが、9人目です。', 'r_youare9'), false, .15)],
+    [LAST_ROOM_AT + 3.4, () => doGlitch(.5, .9, true)],
+    [LAST_ROOM_AT + 3.7, () => { S.roomCrowd = 1; ghostChorus(.55, .5); }],    // 部屋に8人
+    [LAST_ROOM_AT + 5.2, () => doGlitch(.45, .9, true)],
+    [LAST_ROOM_AT + 5.5, () => { S.roomCrowd = 2; ghostChorus(.85, .8); }],    // 椅子のまわりに詰め寄る
+    [LAST_ROOM_AT + 7.4, () => doGlitch(1.6, 1)],
+  ] : [
+    [ROOM_AT, () => { S.phase = 'room'; S.preview = false; S.figure.active = false; S.camLabel = 'CAM 00　警備室'; say(null); }],
+    [ROOM_AT + .2, () => creak()],
+    [ROOM_AT + 1.8, () => { for (let i = 0; i < Math.min(4, POS - 3); i++) setTimeout(() => playVoice('g_kotai' + i, { c: .25, gain: .1 + POS * .03, pan: [-.7, .6, -.3, .4][i] }), i * 700); }],
+    [ROOM_AT + 1.6, line('dontturn')],
+    [ROOM_AT + 4,   prior >= 2 ? () => say(radio('……前の回も、その人、そこにいましたよ。', 'r_rp')) : line('arrived')],
+    [ROOM_AT + 7.7, () => say(radio(POS === 8 ? '……次の人で、9人目です。' : '……あと、' + (CYCLE - POS) + '人。', 'r_left' + POS))],
+  ]).concat([
+    [END_AT, () => endSequence()],
+  ]);
+  buildSchedule();
+}
+let subTimer;
+function say(o, inner, corrupt){
+  const el = $('#sub'); clearInterval(subTimer);
+  el.className = inner ? 'inner' : '';
+  S.subSpan = null; S.subCorrupt = corrupt || 0;
+  if (!o){ el.innerHTML = ''; return; }
+  if (S.ended) return;
+  if (o.who && o.v && AC && AC.currentTime < (S.radioFree || 0) - .05){   // 前の無線がまだ話している
+    setTimeout(() => say(o, inner, corrupt), (S.radioFree - AC.currentTime + .35) * 1000); return;
+  }
+  if (o.who) radioClick();
+  if (o.v){
+    const dur = playVoice(o.v, { radio: !!o.who, c: Math.max(voiceCorruption(), corrupt || 0), pan: o.who ? 0 : -.2, gain: o.who ? 1 : 1.3, delay: o.who ? .12 : 0 });
+    if (o.who && dur){ S.radioFree = AC.currentTime + dur + .1; setTimeout(() => { if (!S.ended) squelch(); }, (dur + .1) * 1000); }   // 話し終わりに無線が切れる
+  }
+  const text = o.s; let i = o.now ? text.length - 1 : 0;
+  el.innerHTML = (o.who ? '<span class="who">【' + o.who + '】</span>' : '') + '<span class="txt"></span>';
+  const span = el.querySelector('.txt');
+  S.subSpan = span; S.subShown = span.textContent = text.slice(0, i);
+  subTimer = setInterval(() => { S.subShown = span.textContent = text.slice(0, ++i); if (i >= text.length) clearInterval(subTimer); }, 45);
+}
+function status(text, bad){
+  const el = $('#osd-status'); el.textContent = text; el.className = 'osd' + (bad ? ' bad' : '');
+  clearTimeout(S.statusTimer); S.statusTimer = setTimeout(() => el.textContent = '', 2200);
+}
+
+/* ===== 報告 ===== */
+function report(){
+  if (!S.running || S.ended) return;
+  reportSound();
+  if (S.phase === 'room'){ status('送信先：この部屋', true); return; }
+  if (S.ghostPhase){ status('受信者：前任者 ' + S.ghosts + '名', true); return; }
+  const open = S.anomalies.filter(a => !a.reported);
+  status('送信中…');
+  setTimeout(() => {
+    if (S.t > (S.failAfter || 22)) status('送信失敗', true);
+    else status('送信済');
+  }, 700);
+  if (!open.length && S.figure.stuck){ setTimeout(() => status('それは、異常ではありません', true), 750); return; }
+  if (open.length){ resolve(open[open.length - 1]); S.correct++; }
+  else {
+    // 異常がないのに押した：警告音と、モニターのガラスにヒビ
+    S.falseReports++; doStatic(0.15, 0.3);
+    setTimeout(() => { alarmSound(); addCrack(); status('誤報', true); }, 120);
+  }
+}
+
+/* ===== モニターのヒビ（誤報のたびに増える。次の勤務で直る） ===== */
+const crackCv = $('#crack'), crackCtx = crackCv.getContext('2d');
+let cracks = [];
+// 割れたガラスの写真（GPT Image 2）。誤報のたびに向き・位置・大きさを変えて1枚ずつ重ねる
+const CRACK_IMG = ['a', 'b', 'c'].map(n => { const im = new Image(); im.src = 'img/crack_' + n + '.webp'; return im; });
+function addCrack(){
+  cracks.push({ i: cracks.length % 3 === 0 ? Math.random() * 3 | 0 : (cracks[cracks.length - 1].i + 1) % 3,
+    fx: Math.random() < .5, fy: Math.random() < .5, ox: (Math.random() - .5) * .3, oy: (Math.random() - .5) * .3,
+    sc: 1.05 + Math.random() * .35, a: .55 + Math.random() * .2 });
+  drawCracks();
+}
+function drawCracks(){
+  const r = crackCv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  crackCv.width = Math.max(1, r.width * dpr | 0); crackCv.height = Math.max(1, r.height * dpr | 0);
+  const c = crackCtx, w = crackCv.width, h = crackCv.height;
+  c.clearRect(0, 0, w, h);
+  for (const k of cracks){
+    const im = CRACK_IMG[k.i];
+    if (!im.complete || !im.naturalWidth){ im.onload = drawCracks; continue; }
+    const cw = w * k.sc, ch = cw * im.naturalHeight / im.naturalWidth;
+    c.save(); c.globalAlpha = k.a;
+    c.translate(w / 2 + k.ox * w, h / 2 + k.oy * h); c.scale(k.fx ? -1 : 1, k.fy ? -1 : 1);
+    c.drawImage(im, -cw / 2, -ch / 2, cw, ch);
+    c.restore();
+  }
+}
+addEventListener('resize', () => { if (cracks.length) drawCracks(); });
+$('#report').addEventListener('click', report);
+addEventListener('keydown', e => {
+  if ((e.code === 'Space' || e.code === 'Enter') && S.running && !S.ended){ e.preventDefault(); report(); }
+});
+
+/* ===== 目を離した ===== */
+/* ===== 声：端末に入っている日本語の読み上げ音声を使う（音声ファイル・外部通信なし） ===== */
+const TTS = 'speechSynthesis' in window ? window.speechSynthesis : null;
+let jaVoice = null;
+function pickVoice(){
+  if (!TTS) return;
+  const vs = TTS.getVoices().filter(v => /^ja/i.test(v.lang));
+  jaVoice = vs.find(v => v.localService) || vs[0] || null;   // 端末内の音声を優先
+}
+if (TTS){ pickVoice(); TTS.onvoiceschanged = pickVoice; }
+function primeVoice(){
+  // iPhone などは最初の読み上げをタップの中で始める必要があるので、無音で一度鳴らしておく
+  if (!TTS) return;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; TTS.speak(u); } catch(e){}
+}
+function speak(text){
+  if (!TTS || !jaVoice) return;
+  try {
+    TTS.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = jaVoice; u.lang = jaVoice.lang; u.rate = .72; u.pitch = .2; u.volume = 1;
+    TTS.speak(u);
+  } catch(e){}
+}
+/* ===== 声：Gemini TTS で事前に作った音声（voice/*.mp3）。目を離した人と9人目では壊していく ===== */
+const VOICE_NAMES = ['r_greet','r_again','r_9th','r_empty','r_saw','r_noreport','r_noreport9','r_broken','r_where',
+  'r_dontturn','r_arrived','r_nomore','r_youare9','w_away1','w_away2','w_welcome','w_watching','g_kotai0','g_kotai1','g_kotai2','g_kotai3']
+  .concat([1, 2, 3, 4, 5, 6, 7, 8].flatMap(n => ['r_pos' + n, 'r_left' + n]))
+  .concat(['b1','b2','c1','c2','d1','d2','e1','e2','f1','f2','g1','g2','h1','h2','x1','x2','x3','p3','p4','p5a','p5b','p5c','rp'].map(k => 'r_' + k));
+const voiceRaw = {}, voiceBuf = {}, voiceRev = {};
+VOICE_NAMES.forEach(n => {   // ページを開いた時点で取得だけしておく（再生はタップ後）
+  voiceRaw[n] = fetch('voice/' + n + '.mp3').then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
+});
+function decodeVoices(){
+  if (!AC) return;
+  VOICE_NAMES.forEach(n => {
+    if (voiceBuf[n]) return;
+    voiceRaw[n].then(ab => {
+      if (!ab || voiceBuf[n]) return;
+      AC.decodeAudioData(ab.slice(0), buf => {
+        voiceBuf[n] = buf;
+        const r = AC.createBuffer(1, buf.length, buf.sampleRate), src = buf.getChannelData(0), dst = r.getChannelData(0);
+        for (let i = 0; i < buf.length; i++) dst[i] = src[buf.length - 1 - i];
+        voiceRev[n] = r;
+      }, () => {});
+    });
+  });
+}
+// どれだけ壊すか（0〜1）。9人目は時間とともに、目を離した人は離すたびに壊れていく
+function voiceCorruption(){
+  let c = 0;
+  if (S.prior >= 2) c = Math.min(.35, (S.prior - 1) * .08);
+  if (LAST) c = Math.max(c, Math.min(1, .15 + S.t / 50 * .85));
+  if (S.awayCount) c = Math.max(c, Math.min(1, .3 + (S.awayCount - 1) * .25 + Math.max(0, S.t - (S.firstAwayT || 0)) / 40));
+  return c;
+}
+function crushCurve(steps){
+  const n = 1024, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++){ const x = i / (n - 1) * 2 - 1; curve[i] = Math.round(x * steps) / steps; }
+  return curve;
+}
+function playVoice(name, o){
+  const buf = voiceBuf[name]; if (!buf || !AC || !master) return;
+  o = o || {}; const c = Math.max(0, Math.min(1, o.c || 0));
+  const out = AC.createGain(); out.gain.value = (o.gain || 1) * (o.radio ? 1 - c * .5 : 1);   // 歪みで大きくなる分を下げる
+  let tail = out;
+  if (o.radio){   // 無線っぽく：帯域を狭め、少し歪ませる
+    const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 320;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200 - c * 1600;
+    const sh = AC.createWaveShaper(); sh.curve = (() => { const k = new Float32Array(1024); for (let i = 0; i < 1024; i++){ const x = i / 1023 * 2 - 1; k[i] = Math.tanh(x * (1.6 + c * 4)); } return k; })();
+    tail.connect(hp); hp.connect(lp); lp.connect(sh); tail = sh;
+  }
+  if (c > .2){    // 量子化（ビットクラッシュ）
+    const cr = AC.createWaveShaper(); cr.curve = crushCurve(Math.max(3, Math.round(40 - c * 36)));
+    tail.connect(cr); tail = cr;
+  }
+  const pan = AC.createStereoPanner ? AC.createStereoPanner() : null;
+  if (pan){ pan.pan.value = o.pan || 0; tail.connect(pan); pan.connect(master); } else tail.connect(master);
+  const t0 = AC.currentTime + (o.delay || 0);
+  if (c < .05){   // 壊さない：そのまま再生
+    const s = AC.createBufferSource(); s.buffer = buf; s.connect(out); s.start(t0); return buf.duration + (o.delay || 0);
+  }
+  // 壊す：細かく刻み、途切れ・繰り返し・逆再生・音程の揺れを混ぜる
+  const baseRate = 1 - c * .22;
+  let when = t0, pos = 0;
+  while (pos < buf.duration - .005){
+    const len = Math.min(.06 + Math.random() * .07, buf.duration - pos);
+    if (Math.random() < c * .12){ when += len / baseRate * (Math.random() < .5 ? 1 : .3); pos += len; continue; }  // 途切れ
+    const reps = Math.random() < c * .28 ? 2 + (Math.random() * (1 + c * 3) | 0) : 1;                                // 繰り返し
+    const rev = Math.random() < c * .12;                                                                              // 逆再生
+    const rate = baseRate * (Math.random() < c * .3 ? .55 + Math.random() * .75 : 1);                                // 音程の揺れ
+    for (let k = 0; k < reps; k++){
+      const src = AC.createBufferSource(), g = AC.createGain(), d = len / rate;
+      src.buffer = rev ? voiceRev[name] || buf : buf; src.playbackRate.value = rate;
+      g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(1, when + .003);
+      g.gain.setValueAtTime(1, Math.max(when + .003, when + d - .003)); g.gain.linearRampToValueAtTime(0, when + d);
+      src.connect(g); g.connect(out); src.start(when, rev ? Math.max(0, buf.duration - pos - len) : pos, len);
+      when += d;
+    }
+    pos += len;
+  }
+  if (c > .55){   // 壊れが進むと、1オクターブ下の同じ声が遅れて重なる
+    const low = AC.createBufferSource(), g = AC.createGain();
+    low.buffer = buf; low.playbackRate.value = .5; g.gain.value = (c - .5) * .9;
+    low.connect(g); g.connect(out); low.start(t0 + .08);
+  }
+  return when - AC.currentTime;
+}
+function ghostChorus(c, gain){
+  for (let i = 0; i < 4; i++) setTimeout(() => playVoice('g_kotai' + i, { c, gain, pan: [-.8, .7, -.3, .4][i] }), i * 260);
+}
+
+function hideSound(){
+  // 声の下に、耳元の息と低いうなりを重ねる（声が出ない端末でもこれは鳴る）
+  breath(.09, 0);
+  if (!AC || !master) return;
+  const o = AC.createOscillator(), g = AC.createGain(), t0 = AC.currentTime;
+  o.type = 'sawtooth'; o.frequency.setValueAtTime(48, t0); o.frequency.linearRampToValueAtTime(41, t0 + 2.5);
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 160;
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.07, t0 + .4); g.gain.linearRampToValueAtTime(0, t0 + 2.8);
+  o.connect(lp).connect(g).connect(master); o.start(); o.stop(t0 + 3);
+}
+
+let titleTimer;
+document.addEventListener('visibilitychange', () => {
+  if (!S.running || S.ended) return;
+  if (document.hidden){
+    S.hiddenAt = performance.now(); S.hiddenClock = new Date();
+    S.hideCount = (S.hideCount || 0) + 1;
+    const wv = S.hideCount === 1 ? 'w_away1' : 'w_away2';
+    if (voiceBuf[wv]) playVoice(wv, { c: Math.max(voiceCorruption(), Math.min(1, .2 + (S.hideCount - 1) * .35)), pan: -.25, gain: 1.4 });
+    else speak(S.hideCount === 1 ? '目を、はなしましたね？' : 'また、目を、はなしましたね。');
+    hideSound();
+    const titles = ['まだ見ています', 'もどってきて', 'うしろ', 'まだ見ています', 'みてる'];
+    let n = 0; document.title = titles[0];
+    clearInterval(titleTimer); titleTimer = setInterval(() => { document.title = titles[++n % titles.length]; }, 1500);
+    return;
+  }
+  clearInterval(titleTimer); document.title = '4階、異常なし。';
+  const away = (performance.now() - S.hiddenAt) / 1000;
+  if (away < 1.5) return;
+  const tn = (performance.now() - S.start) / 1000;
+  if (!S.lookedAway) S.firstAwayT = tn;
+  S.lookedAway = true; S.awayTotal += away; S.awayCount++;
+  if (S.awayCount === 1 && tn < ROOM_AT - 6){
+    // 目を離していたあいだの録画を見せる：人影がカメラの真下まで歩いてくる
+    S.replayFrom = tn + .4; S.replayUntil = tn + 5; S.replayAway = away;
+    doGlitch(.4, .8);
+    for (let k = 0; k < 6; k++) setTimeout(() => footstep(.04 + k * .025, .1), 600 + k * 720);
+    setTimeout(() => {
+      Object.assign(S.figure, { active: true, stuck: true, z: 2.8, x: .2, tilt: .4, kind: 'girl', moving: false });
+      doGlitch(.35, .8);
+      say({ s: '……おかえりなさい。', v: 'w_welcome' }, true);
+    }, 5000);
+  } else {
+    doGlitch(.7, 1, true);
+    if (S.phase === 'corridor' && !S.ghostPhase) Object.assign(S.figure, { active: true, stuck: true, z: 2.1, x: -.05, tilt: .7, kind: 'girl', moving: false });
+    setTimeout(() => say(S.awayCount > 1 ? { s: '……ずっと、見ていましたよ。', v: 'w_watching' } : { s: '……おかえりなさい。', v: 'w_welcome' }, true), 800);
+  }
+});
+
+/* ===== 背景写真：GPT Image 2 で作った監視カメラ風の写真（img/）。読めなければ図形で描く ===== */
+const IMG = {};
+['corridor', 'room'].forEach(n => {
+  const im = new Image(); IMG[n] = { el: im, ok: false };
+  im.onload = () => { IMG[n].ok = true; }; im.src = 'img/' + n + '.jpg';
+});
+// 元画像（1536x1024）の座標 → 画面（320x240）。元画像の中央を 4:3 に切り出している
+const PK = 240 / 1024, PX0 = 85;
+const ph = (x, y) => [(x - PX0) * PK, y * PK];
+const phPoly = pts => pts.map(([x, y]) => ph(x, y));
+
+/* ===== 投影（廊下）：写真の消失点と床の線に合わせてある。単位はおよそメートル ===== */
+const CX = 160.7, CY = 68.7, F = 192.4;
+const XW = 1.55, YC = -1.3, YF = 2.2, ZN = 2.4, ZE = 14;
+const FIG = 1.15;   // 人影は2mを少し超える
+const P = (x, y, z) => [CX + x * F / z, CY + y * F / z];
+function quad(c, pts, fill){
+  c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]);
+  c.closePath(); c.fillStyle = fill; c.fill();
+}
+const rgb = (r, g, b, k) => `rgb(${r*k|0},${g*k|0},${b*k|0})`;
+function lampPower(l, t){
+  if (l.z === 7 && active('light_off')) return 0;
+  let p = l.on;
+  if (l.fl) p *= (Math.sin(t * 31) > 0.93 || Math.random() < 0.02) ? 0.25 : 1;
+  return p;
+}
+function lightAt(z, t){
+  let L = 0.1;
+  for (const l of S.lamps) L += lampPower(l, t) * Math.exp(-((z - l.z) ** 2) / 2.2) * 0.95;
+  return Math.min(1.15, L) * (1 - Math.min(0.55, (z - 1) / 24));
+}
+function wallQuad(c, side, z0, z1, y0, y1){
+  const X = side * XW;
+  return [P(X, y0, z0), P(X, y0, z1), P(X, y1, z1), P(X, y1, z0)];
+}
+function door(c, side, z0, z1, t, open){
+  const L = lightAt((z0 + z1) / 2, t);
+  quad(c, wallQuad(c, side, z0 - .08, z1 + .08, -0.42, YF), rgb(40, 42, 40, L));       // 枠
+  quad(c, wallQuad(c, side, z0, z1, -0.36, YF), open ? '#020202' : rgb(78, 74, 66, L)); // 扉
+  if (!open){
+    const k = side < 0 ? z1 - .15 : z0 + .15;  // ドアノブ
+    const p = P(side * XW * 0.995, 0.38, k); c.fillStyle = rgb(150, 150, 140, L); c.fillRect(p[0] - .8, p[1] - .6, 1.6, 1.2);
+  } else {
+    quad(c, [P(side*XW, -0.36, z0), P(side*(XW-.35), -0.36, z0 + .1), P(side*(XW-.35), YF, z0 + .1), P(side*XW, YF, z0)], rgb(70, 66, 58, L));
+  }
+  const pl = wallQuad(c, side, z0 + (z1 - z0) * .3, z1 - (z1 - z0) * .3, -0.55, -0.47);  // 部屋番号
+  quad(c, pl, rgb(120, 120, 112, L));
+}
+
+
+// 写真の中の扉・照明・非常口の位置
+const PH = {
+  // 扉：開いた穴と、部屋の内側へ開いた扉の端
+  doors: {
+    leftNear:  { hole: phPoly([[335, 180], [400, 200], [400, 785], [335, 865]]), leaf: phPoly([[386, 196], [400, 200], [400, 785], [386, 795]]) },
+    leftFar:   { hole: phPoly([[562, 248], [583, 258], [583, 560], [562, 590]]), leaf: phPoly([[578, 256], [583, 258], [583, 560], [578, 563]]) },
+    rightFar:  { hole: phPoly([[950, 258], [972, 248], [972, 590], [950, 560]]), leaf: phPoly([[950, 258], [955, 257], [955, 562], [950, 560]]) },
+    rightNear: { hole: phPoly([[1132, 198], [1197, 178], [1197, 860], [1132, 790]]), leaf: phPoly([[1132, 198], [1146, 194], [1146, 795], [1132, 790]]) },
+  },
+  // 扉のすき間から覗く顔
+  peek: {
+    leftFar:  { crack: phPoly([[577, 256], [583, 258], [583, 560], [577, 562]]), head: ph(588, 318), hand: ph(584, 372) },
+    rightFar: { crack: phPoly([[950, 258], [958, 256], [958, 563], [950, 560]]), head: ph(946, 318), hand: ph(951, 372) },
+  },
+  lamps: {
+    lamp1: { rect: [ph(712, 0), ph(814, 78)], band: [3, 7.5] },
+    lamp2: { rect: [ph(736, 166), ph(792, 197)], band: [6.5, 11.5] },
+    lamp3: { rect: [ph(749, 230), ph(783, 249)], band: [9, 13.5] },
+  },
+  exit: [ph(749, 282), ph(787, 299)],
+  lamp2: [ph(736, 166), ph(792, 197)],
+  lamp4: [ph(754, 259), ph(780, 273)],
+  screen: { tl: ph(935, 384), tr: ph(1138.5, 412.5), bl: ph(931.5, 508) },
+  cap: { c: ph(942, 495), rx: 74 * PK, ry: 49 * PK },
+};
+function darkBand(c, z0, z1, a){
+  // 奥行き z0〜z1 の床・壁・天井を暗くする（照明が消えたように）。両端はやわらかく
+  for (let z = z0; z < z1; z += .25){
+    const z2 = Math.min(ZE, z + .26), k = Math.sin((z - z0 + .125) / (z1 - z0) * Math.PI);
+    const col = `rgba(0,0,0,${(a * k).toFixed(3)})`;
+    quad(c, [P(-XW, YF, z), P(XW, YF, z), P(XW, YF, z2), P(-XW, YF, z2)], col);
+    quad(c, [P(-XW, YC, z), P(XW, YC, z), P(XW, YC, z2), P(-XW, YC, z2)], col);
+    quad(c, [P(-XW, YC, z), P(-XW, YC, z2), P(-XW, YF, z2), P(-XW, YF, z)], col);
+    quad(c, [P(XW, YC, z), P(XW, YC, z2), P(XW, YF, z2), P(XW, YF, z)], col);
+  }
+}
+function fillRectPair(c, pair, fill){ const [a, b] = pair; c.fillStyle = fill; c.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); }
+/* ===== 人影 ===== */
+function drawFigure(c, bx, by, s, o){
+  // bx,by: 足元のスクリーン座標, s: 1単位あたりのpx, o: {tilt, lean, alpha}
+  const lean = o.lean || 0, tilt = o.tilt || 0;
+  c.save(); c.translate(bx, by); c.scale(s, s);
+  c.fillStyle = c.strokeStyle = o.color || '#050505';
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  // 脚
+  c.lineWidth = .085;
+  for (const sx of [-1, 1]){ c.beginPath(); c.moveTo(sx * .075, -0.92); c.lineTo(sx * .065, 0); c.stroke(); }
+  // 上半身（腰から傾く）
+  c.translate(0, -0.92); c.rotate(-lean);
+  c.beginPath(); c.moveTo(-.15, 0); c.lineTo(.15, 0); c.lineTo(.2, -.5); c.lineTo(-.2, -.5); c.closePath(); c.fill();
+  c.beginPath(); c.ellipse(0, -.5, .2, .055, 0, 0, Math.PI * 2); c.fill();
+  // 長すぎる腕
+  c.lineWidth = .065;
+  for (const sx of [-1, 1]){
+    // 腕は体が傾いても真下へ垂れる
+    c.save(); c.translate(sx * .19, -.47); c.rotate(lean);
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(sx * .04, .85); c.stroke();
+    c.lineWidth = .05; c.beginPath(); c.moveTo(sx * .04, .85); c.lineTo(sx * .045, .97); c.stroke();
+    c.restore();
+  }
+  // 首と頭
+  c.lineWidth = .065; c.beginPath(); c.moveTo(0, -.52); c.lineTo(0, -.62); c.stroke();
+  c.translate(0, -.62); c.rotate(tilt);
+  c.beginPath(); c.ellipse(0, -.11, .088, .12, 0, 0, Math.PI * 2); c.fill();
+  // 垂れ下がる長い髪（常に真下へ）
+  c.rotate(-tilt + lean);
+  c.beginPath(); c.moveTo(-.1, -.12); c.quadraticCurveTo(-.15, .15, -.12, .42); c.lineTo(.12, .42); c.quadraticCurveTo(.15, .15, .1, -.12); c.closePath(); c.fill();
+  c.restore();
+}
+
+/* ===== 人物の写真（GPT Image 2 で作った切り抜き）。読めなければ影の図形で描く ===== */
+const SPR = {};
+['fig_stand', 'fig_tilt', 'fig_lean', 'fig_walk1', 'fig_walk2', 'fig_man', 'fig_oldwoman', 'fig_child', 'fig_crawl',
+ 'guard_a', 'guard_b', 'guard_c', 'guard_d'].concat(Object.keys(OBJECTS)).forEach(n => {
+  const im = new Image(); SPR[n] = { el: im, ok: false };
+  im.onload = () => { SPR[n].ok = true; }; im.src = 'img/' + n + '.webp';
+});
+const sprTmp = document.createElement('canvas'), sprCtx = sprTmp.getContext('2d');
+// bx,by: 足元, h: 画面上の身長(px), o.dark: 暗さ 0〜1, o.flip: 左右反転, o.alpha
+function drawSprite(c, name, bx, by, h, o){
+  const sp = SPR[name]; if (!sp || !sp.ok || h < 1) return false;
+  o = o || {};
+  const im = sp.el, w = h * im.width / im.height;
+  const tw = Math.max(1, Math.ceil(w)), th = Math.max(1, Math.ceil(h));
+  sprTmp.width = tw; sprTmp.height = th;
+  sprCtx.globalCompositeOperation = 'source-over';
+  sprCtx.save();
+  if (o.flip){ sprCtx.translate(tw, 0); sprCtx.scale(-1, 1); }
+  sprCtx.drawImage(im, 0, 0, tw, th);
+  sprCtx.restore();
+  if (o.dark > .01){   // 人物の形のまま暗くする（暗がりに立っているように）
+    sprCtx.globalCompositeOperation = 'source-atop';
+    sprCtx.fillStyle = `rgba(4,5,4,${Math.min(.95, o.dark)})`; sprCtx.fillRect(0, 0, tw, th);
+  }
+  const a = c.globalAlpha; c.globalAlpha = a * (o.alpha == null ? 1 : o.alpha);
+  c.drawImage(sprTmp, bx - w / 2, by - h, w, h);
+  c.globalAlpha = a;
+  return true;
+}
+const farDark = z => Math.min(.75, .18 + Math.max(0, z - 2.5) * .05);   // 遠いほど暗い
+// 「それ」の種類。h: 身長(m)、speed: 近づく速さの倍率（0は動かない）
+const KINDS = {
+  girl:     { h: 1.77 * FIG, speed: 1 },
+  man:      { h: 2.15, speed: .8, sprite: 'fig_man' },
+  oldwoman: { h: 1.4, speed: .5, sprite: 'fig_oldwoman' },
+  child:    { h: 1.15, speed: 0, sprite: 'fig_child' },     // 背を向けて、じっと立っている
+  crawl:    { h: .85, speed: .45, sprite: 'fig_crawl' },     // 四つんばいで這ってくる
+};
+// 歩いているときは足を交互に出し、体が少し上下する
+function drawWalker(c, kind, bx, by, h, t, moving, o){
+  const K = KINDS[kind] || KINDS.girl;
+  let name = K.sprite || (o.tilt > .3 ? 'fig_tilt' : 'fig_stand'), y = by;
+  if (moving){
+    const ph = t * 3.2 + (o.seed || 0);
+    if (kind === 'girl' || !K.sprite) name = ['fig_walk1', 'fig_stand', 'fig_walk2', 'fig_stand'][Math.floor(ph) % 4];
+    if (kind !== 'crawl') y -= Math.abs(Math.sin(ph * Math.PI / 2)) * h * .012;
+    else bx += Math.sin(ph * 1.6) * h * .03;
+  }
+  if (!SPR[name] || !SPR[name].ok) name = 'fig_stand';
+  return drawSprite(c, name, bx, y, h, o);
+}
+
+/* ===== 廊下の描画 ===== */
+function drawCorridor(c, t, opts){
+  opts = opts || {};
+  const clean = !!opts.clean;
+  const pk = clean ? null : activeOf('peek');
+  if (IMG.corridor.ok){
+    c.drawImage(IMG.corridor.el, 0, 0, W, H);
+    // 奥の蛍光灯がときどきまたたく
+    if (Math.sin(t * 31) > 0.93 || Math.random() < 0.02){ fillRectPair(c, PH.lamp4, 'rgba(25,28,26,.92)'); darkBand(c, 10.5, 14, .35); }
+    if (!clean){
+      const lo = activeOf('light_off');
+      if (lo){ const L = PH.lamps[lo.v.lamp || 'lamp2']; fillRectPair(c, L.rect, 'rgb(34,37,35)'); darkBand(c, L.band[0], L.band[1], .62); }
+      if (active('exit_red')){
+        const [e0, e1] = PH.exit, cx = (e0[0] + e1[0]) / 2, cy = (e0[1] + e1[1]) / 2;
+        const g = c.createRadialGradient(cx, cy, 0, cx, cy, 14);
+        g.addColorStop(0, 'rgba(210,40,30,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        c.fillStyle = g; c.fillRect(cx - 14, cy - 14, 28, 28);
+        fillRectPair(c, PH.exit, '#c0281f');
+      }
+      const dop = activeOf('door_open');
+      if (dop){
+        const d = PH.doors[dop.v.door || 'leftNear'];
+        quad(c, d.hole, 'rgb(3,3,3)');                 // 扉の向こうは真っ暗
+        quad(c, d.leaf, 'rgba(70,74,68,.95)');         // 部屋の内側へ開いた扉の端
+      }
+      if (pk) quad(c, PH.peek[pk.v.door || 'rightFar'].crack, 'rgb(2,2,2)');
+    }
+  } else {
+  c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+  // 奥から手前へスライスで塗る
+  const step = .22;
+  for (let z = ZE; z > ZN; z -= step){
+    const z0 = Math.max(ZN, z - step), z1 = z, L = lightAt((z0 + z1) / 2, t);
+    quad(c, [P(-XW, YF, z0), P(XW, YF, z0), P(XW, YF, z1 + .01), P(-XW, YF, z1 + .01)], rgb(58, 60, 55, L));     // 床
+    quad(c, [P(-XW, YC, z0), P(XW, YC, z0), P(XW, YC, z1 + .01), P(-XW, YC, z1 + .01)], rgb(52, 54, 52, L * .8)); // 天井
+    quad(c, [P(-XW, YC, z0), P(-XW, YC, z1 + .01), P(-XW, YF, z1 + .01), P(-XW, YF, z0)], rgb(74, 76, 70, L));   // 左壁
+    quad(c, [P(XW, YC, z0), P(XW, YC, z1 + .01), P(XW, YF, z1 + .01), P(XW, YF, z0)], rgb(70, 72, 67, L * .92)); // 右壁
+  }
+  // 突き当たりの壁と非常口
+  const Le = lightAt(ZE, t);
+  quad(c, [P(-XW, YC, ZE), P(XW, YC, ZE), P(XW, YF, ZE), P(-XW, YF, ZE)], rgb(66, 68, 63, Le));
+  quad(c, [P(-.45, -.3, ZE), P(.45, -.3, ZE), P(.45, YF, ZE), P(-.45, YF, ZE)], rgb(46, 46, 42, Le));
+  const red = active('exit_red') && !opts.clean;
+  const e0 = P(-.25, -.62, ZE), e1 = P(.25, -.45, ZE);
+  c.fillStyle = red ? '#b3261e' : '#2fae5c'; c.fillRect(e0[0], e0[1], e1[0] - e0[0], e1[1] - e0[1]);
+  const g = c.createRadialGradient((e0[0]+e1[0])/2, e0[1], 0, (e0[0]+e1[0])/2, e0[1], 16);
+  g.addColorStop(0, red ? 'rgba(200,40,30,.35)' : 'rgba(60,200,110,.3)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = g; c.fillRect(e0[0] - 16, e0[1] - 16, 40, 34);
+  // 床の目地と幅木
+  c.strokeStyle = 'rgba(0,0,0,.28)'; c.lineWidth = .6;
+  for (let z = 1; z < ZE; z += 1){ const a = P(-XW, YF, z), b = P(XW, YF, z); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+  c.strokeStyle = 'rgba(20,20,18,.7)'; c.lineWidth = 1;
+  for (const sx of [-1, 1]){ const a = P(sx * XW, YF - .06, ZN), b = P(sx * XW, YF - .06, ZE); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); }
+  // ドア
+  door(c, 1, 9.5, 10.6, t, false);
+  if (active('extra_door') && !opts.clean) door(c, -1, 9.1, 10.1, t, false);
+  door(c, -1, 6.4, 7.5, t, false);
+  door(c, 1, 5.2, 6.3, t, active('peek') && !opts.clean);
+  door(c, -1, 3, 4.2, t, active('door_open') && !opts.clean);
+  // 蛍光灯
+  for (const l of S.lamps){
+    const p = lampPower(l, t);
+    quad(c, [P(-.16, YC + .005, l.z - .45), P(.16, YC + .005, l.z - .45), P(.16, YC + .005, l.z + .45), P(-.16, YC + .005, l.z + .45)],
+      p > .5 ? 'rgb(225,232,222)' : 'rgb(48,50,48)');
+    if (p > .5){
+      const q = P(0, YC, l.z), r = 70 / l.z;
+      const gg = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], r);
+      gg.addColorStop(0, 'rgba(210,225,215,.22)'); gg.addColorStop(1, 'rgba(0,0,0,0)');
+      c.fillStyle = gg; c.fillRect(q[0] - r, q[1] - r, r * 2, r * 2);
+    }
+  }
+  }
+  if (clean) return;
+  // 靴（そろえて置いてある）
+  const sh = activeOf('shoes');
+  if (sh){
+    for (const dx of [-.09, .09]){
+      const z = sh.v.z || 5.6, p = P((sh.v.x == null ? .35 : sh.v.x) + dx, YF, z);
+      c.fillStyle = 'rgba(92,26,22,.92)';
+      c.beginPath(); c.ellipse(p[0], p[1], .055 * F / z, 110 * .26 / (z * z) * 1.4, 0, 0, 7); c.fill();
+    }
+  }
+  // 手形（右の壁）
+  const hp = activeOf('handprints');
+  if (hp){
+    const { side = 1, z0 = 4.3, n = 5 } = hp.v;
+    for (let m = 0; m < n; m++){
+      const y = [.95, .8, 1.0, .85, 1.05, .7][m % 6], z = z0 + m * .42;
+      const p = P(side * XW * .995, y, z), sz = .22 * F / z;
+      c.fillStyle = 'rgba(48,16,12,.8)';
+      c.beginPath(); c.ellipse(p[0], p[1], sz * .22, sz * .3, 0, 0, 7); c.fill();
+      for (let f = 0; f < 4; f++){ c.beginPath(); c.ellipse(p[0] - sz * .18 + f * sz * .12, p[1] - sz * .42, sz * .045, sz * .14, 0, 0, 7); c.fill(); }
+    }
+  }
+  // 足あと（奥からこちらへ）
+  const fp = activeOf('footprints');
+  if (fp){
+    const { x = .15, n = 10 } = fp.v;
+    for (let i = 0; i < n; i++){
+      const z = 11 - i * (8 / n), p = P((i % 2 ? .1 : -.1) + x, YF, z);
+      c.fillStyle = 'rgba(14,16,15,.6)';
+      c.beginPath(); c.ellipse(p[0], p[1], .05 * F / z, Math.max(.4, 110 * .26 / (z * z)), 0, 0, 7); c.fill();
+    }
+  }
+  // 扉の隙間から覗く顔
+  if (pk){
+    const pp = PH.peek[pk.v.door || 'rightFar'], [hx, hy] = pp.head, [fx, fy] = pp.hand;
+    c.fillStyle = '#050505';
+    c.beginPath(); c.ellipse(hx, hy, 2.4, 3.2, -.4, 0, 7); c.fill();
+    c.fillRect(hx - 1.4, hy + 2, 2.2, 9);
+    c.fillStyle = 'rgba(175,178,168,.6)'; c.fillRect(fx - .6, fy, 1.6, .7); c.fillRect(fx - .6, fy + 1.4, 1.6, .7);
+  }
+  // 床に置かれた物（写真）。奥から順に描く。風船はゆっくり揺れる
+  S.anomalies.filter(a => OBJECTS[a.type] && !a.reported).sort((p, q) => q.v.z - p.v.z).forEach(a => {
+    const sway = a.type === 'obj_balloon' ? Math.sin(t * .8 + a.t) * .05 : 0;
+    const p = P(a.v.x + sway, YF, a.v.z);
+    drawSprite(c, a.type, p[0], p[1], OBJECTS[a.type] * F / a.v.z, { flip: a.v.flip, dark: farDark(a.v.z) + .05 });
+  });
+  // 1〜8人目：それまでの前任者が、廊下のいちばん奥に並んで立っている
+  if (!LAST && (S.preview || opts.mini) && POS > 1){
+    for (let i = 0; i < POS - 1; i++){
+      const z = 12.6 - (i % 3) * .5, x = (i - (POS - 2) / 2) * .34, p = P(x, YF, z);
+      drawSprite(c, 'guard_' + 'abcd'[i % 4], p[0], p[1], 1.72 * F / z, { flip: i >= 4, dark: .55 });
+    }
+  }
+  // 前任者たち（9人目のみ）。遠い順に描く
+  const GH = [[-.9, 10, .1], [.9, 9, -.2], [-.35, 8, .3], [1.0, 7, .15], [-1.0, 6, -.3], [.45, 5.2, .4], [-.6, 4.4, -.1], [.1, 3.6, .25]];
+  for (let i = 0; i < S.ghosts; i++){
+    const [gx, gz0, tl] = GH[i], gz = S.ghostNear ? Math.max(2, gz0 * .45) : gz0, p = P(gx * (S.ghostNear ? .75 : 1), YF, gz);
+    if (!drawSprite(c, 'guard_' + 'abcd'[i % 4], p[0], p[1], 1.72 * F / gz, { flip: i >= 4, dark: farDark(gz) }))
+      drawFigure(c, p[0], p[1], F / gz * FIG, { tilt: S.ghostNear ? tl * 2.2 : tl });
+  }
+  // 人影
+  const fg = S.figure;
+  if (fg.active){
+    const p = P(fg.x, YF, fg.z);
+    const kind = fg.kind || 'girl', moving = fg.moving && (KINDS[kind] || KINDS.girl).speed > 0;
+    if (!drawWalker(c, kind, p[0], p[1], (KINDS[kind] || KINDS.girl).h * F / fg.z, t, moving, { dark: farDark(fg.z), tilt: fg.tilt }))
+      drawFigure(c, p[0], p[1], F / fg.z * FIG, { tilt: fg.tilt });
+  }
+}
+
+/* ===== 警備室の描画 ===== */
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x);
+function drawRoom(c, t){
+  if (!IMG.room.ok) return drawRoomProcedural(c, t);
+  const rt = t - S.roomAt;
+  c.drawImage(IMG.room.el, 0, 0, W, H);
+  // モニターに廊下のカメラ映像を映す
+  drawCorridor(mctx, t, { mini: true });
+  const { tl, tr, bl } = PH.screen;
+  c.save();
+  c.transform((tr[0] - tl[0]) / W, (tr[1] - tl[1]) / W, (bl[0] - tl[0]) / H, (bl[1] - tl[1]) / H, tl[0], tl[1]);
+  c.drawImage(mini, 0, 0); c.fillStyle = 'rgba(200,215,205,.14)'; c.fillRect(0, 0, W, H);
+  c.restore();
+  // 警備員の帽子を手前に描き戻す（モニターの前にいるので）
+  const cap = PH.cap;
+  c.save(); c.beginPath(); c.ellipse(cap.c[0], cap.c[1], cap.rx, cap.ry, 0, 0, 7); c.clip(); c.drawImage(IMG.room.el, 0, 0, W, H); c.restore();
+  // 人影：開いたドアから入り、背後へ近づき、肩越しにのぞきこむ
+  const k = ease((rt - 1) / 6);
+  const bx = 95 + (264 - 95) * k, by = 143 + (238 - 143) * k;
+  const sc = 70 + (104 - 70) * k;
+  const lean = 0.7 * ease((rt - 5.5) / 2.5);
+  if (!LAST && S.lookedAway && !drawSprite(c, 'fig_tilt', 45, 228, 1.77 * 100, { dark: .35 }))
+    drawFigure(c, 45, 228, 100, { tilt: .55, color: '#050505' });   // 隅から、ずっとカメラを見ている
+  if (!LAST && rt > .6){
+    // 歩いてくる立ち姿から、前かがみの姿へ入れ替わる
+    const lw = ease((rt - 5.5) / 2.2), bob = Math.sin(rt * 5) * .8 * (1 - k);
+    const ok = SPR.fig_stand.ok && SPR.fig_lean.ok;
+    if (ok){
+      if (lw < 1) drawWalker(c, 'girl', bx, by, 1.77 * sc, t, k < .98, { dark: .42, alpha: 1 - lw });
+      if (lw > 0) drawSprite(c, 'fig_lean', bx - 6, by, 1.55 * sc, { dark: .38, alpha: lw });
+    } else drawFigure(c, bx, by, sc, { lean, tilt: .2 + lean * .6, color: '#040404' });
+  }
+  if (LAST && S.roomCrowd){
+    const near = S.roomCrowd > 1;
+    const CR = [[100, 150, 68], [135, 160, 72], [60, 190, 80], [285, 175, 78], [270, 215, 92], [160, 225, 100], [115, 238, 104], [300, 238, 104]];
+    for (const [x0, y0, s0] of CR){
+      const side = x0 < 205 ? 1 : -1;
+      const x = near ? x0 + (205 - x0) * .35 : x0, y = near ? y0 + 10 : y0, scl = near ? s0 * 1.2 : s0;
+      const gi = CR.findIndex(r => r[0] === x0);
+      if (!drawSprite(c, 'guard_' + 'abcd'[gi % 4], x, y, 1.72 * scl, { flip: gi >= 4, dark: near ? .3 : .4 }))
+        drawFigure(c, x, y, scl, { tilt: side * (near ? .55 : .3), lean: near ? -side * .22 : 0, color: '#040404' });
+    }
+  }
+}
+function drawRoomProcedural(c, t){
+  const rt = t - S.roomAt;
+  c.fillStyle = '#070807'; c.fillRect(0, 0, W, H);
+  c.fillStyle = '#1b1d1b'; c.fillRect(0, 0, W, 158);  // 壁
+  c.fillStyle = '#131413'; c.fillRect(0, 158, W, 82); // 床
+  c.fillStyle = '#0d0e0d'; c.fillRect(0, 155, W, 4);  // 幅木
+  // 奥のドア（少し開いている）
+  const doorOpen = ease(rt / 1.5);
+  c.fillStyle = '#121312'; c.fillRect(34, 52, 58, 106);
+  c.fillStyle = '#020202'; c.fillRect(36, 54, 54 * (0.08 + doorOpen * .55), 104);
+  c.fillStyle = '#161716'; c.fillRect(36 + 54 * (0.08 + doorOpen * .55), 54, 54 * (1 - 0.08 - doorOpen * .55), 104);
+  // ポスター・時計
+  c.fillStyle = '#232523'; c.fillRect(120, 30, 34, 24);
+  c.strokeStyle = '#2a2c2a'; c.beginPath(); c.arc(286, 36, 11, 0, 7); c.stroke();
+  c.beginPath(); c.moveTo(286, 36); c.lineTo(286, 28); c.moveTo(286, 36); c.lineTo(292, 39); c.stroke();
+  // 机
+  quad(c, [[104, 132], [304, 132], [318, 150], [92, 150]], '#2a2825');
+  quad(c, [[92, 150], [318, 150], [318, 166], [92, 166]], '#151413');
+  // モニター
+  drawCorridor(mctx, t, { clean: false });
+  c.fillStyle = '#0c0c0c'; c.fillRect(200, 120, 20, 14);
+  c.fillStyle = '#101110'; c.fillRect(170, 70, 82, 56);
+  c.drawImage(mini, 174, 74, 74, 48);
+  c.fillStyle = 'rgba(120,150,140,.08)'; c.fillRect(174, 74, 74, 48);
+  // モニターの光
+  c.save(); c.globalCompositeOperation = 'lighter';
+  const g = c.createRadialGradient(211, 98, 4, 211, 110, 150);
+  g.addColorStop(0, 'rgba(70,90,85,.35)'); g.addColorStop(.5, 'rgba(30,40,38,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = g; c.fillRect(0, 0, W, H); c.restore();
+  // 椅子と座っている人（あなた）
+  c.fillStyle = '#0b0b0b';
+  c.beginPath(); c.roundRect ? c.roundRect(184, 150, 64, 70, 6) : c.rect(184, 150, 64, 70); c.fill();
+  c.fillStyle = '#101010';
+  c.beginPath(); c.ellipse(216, 160, 34, 15, 0, 0, 7); c.fill();
+  c.fillRect(182, 160, 68, 40);
+  c.fillRect(209, 140, 14, 14);
+  c.beginPath(); c.ellipse(216, 136, 13, 15, 0, 0, 7); c.fill();
+  // 頭のふちにモニターの光
+  c.strokeStyle = 'rgba(120,150,145,.35)'; c.lineWidth = 1;
+  c.beginPath(); c.ellipse(216, 136, 13, 15, 0, Math.PI * 1.1, Math.PI * 1.9); c.stroke();
+  // 最後に、ほんの少しだけ振り返ろうとする
+  const turn = ease((t - TURN_AT) / 3);
+  if (turn > 0){
+    c.fillStyle = `rgba(110,125,120,${.35 * turn})`;
+    c.beginPath(); c.ellipse(216 + 11 * turn, 138, 2.2 * turn + .5, 5, 0, 0, 7); c.fill();
+  }
+  // 人影：ドアから入り、背後へ近づき、肩越しにのぞきこむ
+  const k = ease((rt - 1) / 6);
+  const bx = 63 + (250 - 63) * k, by = 157 + (232 - 157) * k;
+  const s = 66 + (96 - 66) * k;
+  const lean = 0.42 * ease((rt - 5.5) / 2.5);
+  if (!LAST && S.lookedAway) drawFigure(c, 300, 178, 72, { tilt: .55, color: '#050505' });   // 隅から、ずっとカメラを見ている
+  if (!LAST && rt > .6) drawFigure(c, bx, by, s, { lean, tilt: .2 + lean * .6, color: '#040404' });
+  if (LAST && S.roomCrowd){
+    const near = S.roomCrowd > 1;
+    const CR = [[52, 160, 62], [96, 163, 64], [140, 166, 66], [290, 166, 66], [268, 190, 80], [160, 200, 86], [300, 214, 92], [118, 222, 96]];
+    for (const [x0, y0, s0] of CR){
+      const side = x0 < 216 ? 1 : -1;
+      const x = near ? x0 + (216 - x0) * .35 : x0, y = near ? y0 + 12 : y0, sc = near ? s0 * 1.2 : s0;
+      drawFigure(c, x, y, sc, { tilt: side * (near ? .55 : .3), lean: near ? -side * .22 : 0, color: '#040404' });
+    }
+  }
+}
+
+/* ===== 後処理 ===== */
+function post(c, t){
+  // ローリングバー
+  const y = (t * 22) % (H + 60) - 30;
+  const g = c.createLinearGradient(0, y - 20, 0, y + 20);
+  g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,255,255,.035)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = g; c.fillRect(0, y - 20, W, 40);
+  // ノイズ
+  c.globalAlpha = .07 + S.staticLevel * .75;
+  c.drawImage(noiseFrames[(Math.random() * 6) | 0], 0, 0);
+  c.globalAlpha = 1;
+  if (S.staticLevel > .1){
+    for (let i = 0; i < 6; i++){
+      const yy = Math.random() * H, h = 2 + Math.random() * 8;
+      c.drawImage(cv, 0, yy, W, h, (Math.random() - .5) * 18 * S.staticLevel, yy, W, h);
+    }
+  }
+  // 周辺減光
+  const v = c.createRadialGradient(W/2, H/2, H * .35, W/2, H/2, H * .85);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.65)');
+  c.fillStyle = v; c.fillRect(0, 0, W, H);
+  // 色味（くすんだ緑灰色）
+  c.globalCompositeOperation = 'color'; c.fillStyle = 'rgb(118,132,124)'; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = 'source-over';
+  if (S.phase === 'corridor' && active('exit_red') && IMG.corridor.ok && !(S.t >= S.replayFrom && S.t < S.replayUntil)){
+    const [e0, e1] = PH.exit, cx = (e0[0] + e1[0]) / 2, cy = (e0[1] + e1[1]) / 2;
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, 13);
+    g.addColorStop(0, 'rgba(190,40,30,.35)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = g; c.fillRect(cx - 13, cy - 13, 26, 26);
+    fillRectPair(c, PH.exit, 'rgba(170,38,30,.95)');
+  }
+  if (S.glitch > .02) glitchFx(c, S.glitch);
+}
+// 映像が壊れる：横ずれ・色ずれ・ブロック崩れ・縦ロール（白い全面点滅は使わない）
+function glitchFx(c, g){
+  for (let i = 0; i < 3 + g * 10; i++){
+    const yy = Math.random() * H | 0, h = 1 + Math.random() * 14 * g | 0;
+    c.drawImage(cv, 0, yy, W, h, (Math.random() - .5) * 60 * g, yy, W, h);
+  }
+  const img = c.getImageData(0, 0, W, H), d = img.data, src = new Uint8ClampedArray(d), dx = (2 + g * 6) | 0;
+  for (let y = 0; y < H; y++){
+    const row = y * W;
+    for (let x = 0; x < W; x++){
+      const k = (row + x) * 4;
+      d[k] = src[(row + Math.min(W - 1, x + dx)) * 4];
+      d[k + 2] = src[(row + Math.max(0, x - dx)) * 4 + 2];
+    }
+  }
+  c.putImageData(img, 0, 0);
+  for (let i = 0; i < g * 9; i++){
+    const bw = 8 + Math.random() * 60, bh = 4 + Math.random() * 24, x = Math.random() * W, y = Math.random() * H;
+    if (Math.random() < .5) c.drawImage(cv, Math.random() * W, Math.random() * H, bw, bh, x, y, bw, bh);
+    else { c.fillStyle = Math.random() < .5 ? 'rgba(0,0,0,.85)' : `rgba(${40 + Math.random() * 50 | 0},${70 + Math.random() * 70 | 0},${55 + Math.random() * 45 | 0},.55)`; c.fillRect(x, y, bw, bh); }
+  }
+  if (g > .6 && Math.random() < .3){
+    const off = Math.random() * H | 0, tmp = c.getImageData(0, 0, W, H);
+    c.putImageData(tmp, 0, off); c.putImageData(tmp, 0, off - H);
+  }
+}
+function doGlitch(dur, lvl, freeze){
+  const tn = S.running ? (performance.now() - S.start) / 1000 : S.t;
+  S.glitchUntil = Math.max(S.glitchUntil, tn + dur);
+  S.glitchPeak = Math.max(S.glitchPeak, lvl);
+  if (freeze) S.freezeUntil = tn + dur * .45;
+  glitchSound(dur, lvl);
+}
+const GARBLE = '█▓▒░＃？ｦﾂｼﾞ…〓※';
+const garble = (text, g) => Array.from(text, ch => ch !== ' ' && ch !== '　' && Math.random() < g * .6 ? GARBLE[Math.random() * GARBLE.length | 0] : ch).join('');
+function doStatic(dur, lvl){
+  S.staticUntil = Math.max(S.staticUntil, S.t + dur);
+  S.staticPeak = Math.max(lvl, S.staticUntil > S.t ? (S.staticPeak || 0) : 0);
+  staticNoise(dur, lvl);
+}
+
+/* ===== 時刻表示 ===== */
+const pad = n => String(n).padStart(2, '0');
+function stamp(){
+  if (active('time_freeze')) return 'XXXX/XX/XX 04:44:44';
+  const replaying = S.t < S.replayUntil && S.hiddenClock;
+  const d = replaying ? new Date(S.hiddenClock.getTime() + Math.max(0, S.t - S.replayFrom) / 4.6 * S.replayAway * 1000) : new Date();
+  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+/* ===== 音（すべてWeb Audioで生成。外部素材なし） ===== */
+let AC, master, drone, droneFilter, white, brown;
+function makeNoise(type){
+  const len = AC.sampleRate * 2, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < len; i++){
+    const w = Math.random() * 2 - 1;
+    if (type === 'brown'){ last = (last + .02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
+  }
+  return buf;
+}
+function loop(buf){ const s = AC.createBufferSource(); s.buffer = buf; s.loop = true; s.start(); return s; }
+function initAudio(){
+  if (!AC){
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return; }
+    white = makeNoise('white'); brown = makeNoise('brown');
+  }
+  AC.resume && AC.resume();
+  master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
+  master.gain.linearRampToValueAtTime(.9, AC.currentTime + 1);
+  // 換気扇：こもった「ゴーッ」と、羽根が回るゆるい唸り。BGMはなし
+  const fan = loop(brown), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+  const pk = AC.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 140; pk.Q.value = 1.2; pk.gain.value = 6;
+  const fg = AC.createGain(); fg.gain.value = .06; fan.connect(lp); lp.connect(pk); pk.connect(fg); fg.connect(master);
+  const motor = AC.createOscillator(); motor.frequency.value = 47;
+  const mg = AC.createGain(); mg.gain.value = .004; motor.connect(mg); mg.connect(master); motor.start();
+  const wob = AC.createOscillator(); wob.frequency.value = .35;
+  const wg = AC.createGain(); wg.gain.value = .014; wob.connect(wg); wg.connect(fg.gain); wob.start();   // 風量がわずかに揺れる
+}
+function env(node, peak, a, d, when){
+  const g = AC.createGain(), t0 = when || AC.currentTime;
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(peak, t0 + a); g.gain.exponentialRampToValueAtTime(.0001, t0 + a + d);
+  node.connect(g); return g;
+}
+function staticNoise(dur, lvl){
+  if (!AC || !master) return;
+  const s = AC.createBufferSource(); s.buffer = white;
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = .6;
+  s.connect(bp); env(bp, .035 * lvl, .03, dur).connect(master); s.start(); s.stop(AC.currentTime + dur + .1);
+}
+function glitchSound(dur, lvl){
+  if (!AC || !master) return;
+  const o = AC.createOscillator(), t0 = AC.currentTime; o.type = 'square';
+  for (let k = 0; k * .05 < dur; k++) o.frequency.setValueAtTime(40 + Math.random() * 380, t0 + k * .05);
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100;
+  const g = AC.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.022 * lvl, t0 + .02);
+  g.gain.setValueAtTime(.022 * lvl, t0 + dur); g.gain.linearRampToValueAtTime(0, t0 + dur + .05);
+  o.connect(lp).connect(g).connect(master); o.start(); o.stop(t0 + dur + .1);
+  staticNoise(dur, lvl * .8);
+}
+function radioClick(){
+  if (!AC || !master) return;
+  const s = AC.createBufferSource(); s.buffer = white;
+  const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;
+  s.connect(hp); env(hp, .045, .005, .09).connect(master); s.start(); s.stop(AC.currentTime + .15);
+}
+function footstep(vol, pan){
+  if (!AC || !master) return;
+  const o = AC.createOscillator(); o.frequency.setValueAtTime(80, AC.currentTime); o.frequency.exponentialRampToValueAtTime(38, AC.currentTime + .18);
+  const p = AC.createStereoPanner ? AC.createStereoPanner() : null;
+  const out = env(o, vol, .01, .3); if (p){ p.pan.value = pan; out.connect(p).connect(master); } else out.connect(master);
+  o.start(); o.stop(AC.currentTime + .4);
+  // 靴底が床をこする音
+  const n = AC.createBufferSource(); n.buffer = white;
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800 + Math.random() * 900; bp.Q.value = 1.4;
+  const nout = env(bp, vol * .55, .004, .07); n.connect(bp);
+  if (p) nout.connect(p); else nout.connect(master);
+  n.start(AC.currentTime + .015, Math.random()); n.stop(AC.currentTime + .15);
+}
+function reportSound(){
+  // ボタンを押した手ごたえ（カチッ）と、送信の短い電子音
+  if (!AC || !master) return;
+  const t0 = AC.currentTime;
+  const n = AC.createBufferSource(); n.buffer = white;
+  const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3000;
+  n.connect(hp); env(hp, .06, .001, .03).connect(master); n.start(t0, Math.random()); n.stop(t0 + .06);
+  const o = AC.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(1320, t0 + .05);
+  env(o, .045, .005, .09, t0 + .05).connect(master); o.start(t0 + .05); o.stop(t0 + .2);
+}
+function alarmSound(){
+  // 警告音：低めの2音を2回。驚かせる大きさにはしない
+  if (!AC || !master) return;
+  const t0 = AC.currentTime;
+  [[880, 0], [622, .2], [880, .45], [622, .65]].forEach(([f, d]) => {
+    const o = AC.createOscillator(); o.type = 'square'; o.frequency.value = f;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
+    const g = AC.createGain(); g.gain.setValueAtTime(0, t0 + d); g.gain.linearRampToValueAtTime(.035, t0 + d + .01);
+    g.gain.setValueAtTime(.035, t0 + d + .17); g.gain.linearRampToValueAtTime(0, t0 + d + .19);
+    o.connect(lp); lp.connect(g); g.connect(master); o.start(t0 + d); o.stop(t0 + d + .2);
+  });
+  // ガラスにヒビが入る音
+  const n = AC.createBufferSource(); n.buffer = white;
+  const bp = AC.createBiquadFilter(); bp.type = 'highpass'; bp.frequency.value = 2500;
+  n.connect(bp); env(bp, .07, .002, .25).connect(master); n.start(t0, Math.random()); n.stop(t0 + .3);
+  for (let k = 0; k < 6; k++){
+    const c2 = AC.createBufferSource(); c2.buffer = white;
+    const f2 = AC.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 3000 + Math.random() * 4000; f2.Q.value = 3;
+    c2.connect(f2); env(f2, .05, .001, .04, t0 + .05 + Math.random() * .35).connect(master); c2.start(t0, Math.random()); c2.stop(t0 + .6);
+  }
+}
+function squelch(){
+  // 無線の送信が切れる「ザッ」
+  if (!AC || !master) return;
+  const n = AC.createBufferSource(); n.buffer = white;
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = .8;
+  n.connect(bp); env(bp, .05, .005, .16).connect(master); n.start(AC.currentTime, Math.random()); n.stop(AC.currentTime + .25);
+}
+function creak(){
+  // 古いドアのきしみ：ざらついた低い音が不規則に揺れる
+  if (!AC || !master) return;
+  const o = AC.createOscillator(), t0 = AC.currentTime; o.type = 'sawtooth';
+  for (let k = 0; k < 40; k++) o.frequency.setValueAtTime(70 + Math.random() * 60 + k * 1.2, t0 + k * .035);
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 950; bp.Q.value = 6;
+  const g = AC.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.05, t0 + .25);
+  g.gain.setValueAtTime(.05, t0 + 1.1); g.gain.linearRampToValueAtTime(0, t0 + 1.5);
+  const p = AC.createStereoPanner ? AC.createStereoPanner() : null;
+  o.connect(bp); bp.connect(g); if (p){ p.pan.value = -.5; g.connect(p).connect(master); } else g.connect(master);
+  o.start(t0); o.stop(t0 + 1.6);
+}
+function breath(vol, pan){
+  if (!AC || !master) return;
+  const s = AC.createBufferSource(); s.buffer = white;
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 700; bp.Q.value = 1.2;
+  const g = AC.createGain(), t0 = AC.currentTime;
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + 1.1); g.gain.linearRampToValueAtTime(vol * .3, t0 + 1.4);
+  g.gain.linearRampToValueAtTime(vol * .9, t0 + 1.7); g.gain.linearRampToValueAtTime(0, t0 + 3.2);
+  const p = AC.createStereoPanner ? AC.createStereoPanner() : null;
+  s.connect(bp).connect(g); if (p){ p.pan.value = pan == null ? -.35 : pan; g.connect(p).connect(master); } else g.connect(master);
+  s.start(); s.stop(t0 + 3.4);
+}
+
+/* ===== メインループ ===== */
+function frame(now){
+  if (!S.running) return;
+  S.t = (now - S.start) / 1000;
+  const t = S.t;
+  for (let i = 0; i < TIMELINE.length; i++){
+    if (!S.fired.has('tl' + i) && t >= TIMELINE[i][0]){ S.fired.add('tl' + i); TIMELINE[i][1](); }
+  }
+  for (let i = 0; i < schedule.length; i++){
+    if (S.phase === 'corridor' && !S.fired.has('an' + i) && t >= schedule[i].t){ S.fired.add('an' + i); spawn(schedule[i].type); }
+  }
+  // ときどき映像が乱れる
+  if (t > S.nextStatic && S.phase === 'corridor'){
+    if (LAST) doGlitch(.12 + Math.random() * .2, .4); else doStatic(.15 + Math.random() * .25, .45);
+    if (S.figure.active && !S.figure.stuck) S.figure.z = Math.max(3, S.figure.z - 1.2 * ((KINDS[S.figure.kind] || KINDS.girl).speed > 0 ? 1 : 0));  // 乱れのあと、少しだけ近い
+    S.nextStatic = t + 4 + Math.random() * 3;
+  }
+  S.staticLevel = t < S.staticUntil ? (S.staticPeak || .5) : Math.max(0, S.staticLevel - .08);
+  if (t >= S.staticUntil) S.staticPeak = 0;
+  S.glitch = t < S.glitchUntil ? S.glitchPeak : Math.max(0, S.glitch - .1);
+  if (t >= S.glitchUntil) S.glitchPeak = 0;
+  // 人影はゆっくり近づく
+  const fg = S.figure;
+  if (fg.stuck) fg.tilt = Math.min(.95, fg.tilt + .0006);
+  else if (fg.active && S.phase === 'corridor'){ const sp = (KINDS[fg.kind] || KINDS.girl).speed; fg.moving = sp > 0 && fg.z > 3.02; fg.z = Math.max(3, fg.z - .035 * sp); fg.tilt += (Math.sin(t * .4) * .05 - fg.tilt * .002) * .02; }
+  // 足音・呼吸
+  if (t > S.nextStep){
+    if (S.phase === 'corridor' && fg.active && fg.moving){ footstep(.05 * (6 / fg.z), .2); S.nextStep = t + .9 + Math.random() * .5; }
+    else if (S.phase === 'room' && !LAST && t < ROOM_AT + 7){ footstep(.06 + (t - ROOM_AT) * .01, -.3); S.nextStep = t + 1.2; }
+    else S.nextStep = t + 1;
+  }
+  if (S.phase === 'room' && t > S.roomAt + 3 && t > S.nextBreath && t < END_AT){
+    if (LAST && S.roomCrowd){ breath(.05, Math.random() * 1.6 - .8); S.nextBreath = t + .7 + Math.random() * .5; }  // 何人もの息
+    else { breath(.04 + (t - S.roomAt) * .005); S.nextBreath = t + 2.8; }
+  }
+
+  const replaying = S.phase === 'corridor' && t >= S.replayFrom && t < S.replayUntil;
+  if (t < S.freezeUntil){   // 映像が止まる：止まった瞬間の画を保ったまま乱す
+    if (!S.frozen){ frozen.getContext('2d').drawImage(cv, 0, 0); S.frozen = true; }
+    ctx.drawImage(frozen, 0, 0); glitchFx(ctx, S.glitch * .7);
+  }
+  else if (S.phase === 'corridor'){
+    S.frozen = false;
+    if (replaying){
+      // 録画の再生：人影が奥からカメラの真下まで歩いてくる
+      const keep = Object.assign({}, fg), q = ease((t - S.replayFrom) / 4.4);
+      Object.assign(S.figure, { active: true, z: 12 - 10.4 * q, x: .15 * q, tilt: .55 * q, kind: 'girl', moving: q < 1 });
+      drawCorridor(ctx, t); Object.assign(S.figure, keep);
+    } else drawCorridor(ctx, t);
+    post(ctx, t);
+  } else { S.frozen = false; drawRoom(ctx, t); post(ctx, t); }
+  // 画面の揺れ・表示の文字化け
+  $('#monitor').style.transform = S.glitch > .05 ? `translate(${(Math.random() - .5) * 8 * S.glitch}px,${(Math.random() - .5) * 5 * S.glitch}px)` : '';
+  let cam = replaying ? 'CAM 03　▶ 再生中（不在時の録画）' : S.camLabel;
+  if (LAST && S.phase === 'corridor' && t % 5.3 < .18) cam = 'CAM 09　4F 東廊下';
+  $('#osd-cam').textContent = S.glitch > .35 ? garble(cam, S.glitch) : cam;
+  const g2 = Math.max(S.glitch > .3 ? S.glitch : 0, S.subCorrupt);
+  if (S.subSpan) S.subSpan.textContent = g2 > 0 ? garble(S.subShown, g2) : S.subShown;
+  $('#osd-time').textContent = S.glitch > .5 ? garble(stamp(), S.glitch) : stamp();
+  $('#osd-rec').style.visibility = (t % 1.4) < .9 ? 'visible' : 'hidden';
+  if (!S.ended) requestAnimationFrame(frame);
+}
+
+/* ===== 開始・終了 ===== */
+function startGame(){
+  resetState(); buildRun(); S.roomAt = LAST ? LAST_ROOM_AT : ROOM_AT;
+  plays++; store.set('f4_plays', String(plays));
+  $('#title').classList.add('hidden'); $('#ending').classList.add('hidden');
+  const g = $('#game'); g.classList.remove('hidden'); g.removeAttribute('aria-hidden');
+  $('#fade').style.transition = 'none'; $('#fade').style.opacity = 0; $('#fade').innerHTML = ''; $('#monitor').style.transform = '';
+  $('#osd-cam').textContent = 'CAM 03　4F 東廊下'; $('#sub').innerHTML = '';
+  $('#report').disabled = false;
+  cracks = []; drawCracks();
+  initAudio(); decodeVoices(); primeVoice(); pickVoice();
+  S.running = true; S.start = performance.now();
+  requestAnimationFrame(frame);
+}
+function endSequence(){
+  if (TTS) try { TTS.cancel(); } catch(e){}
+  if (LAST){
+    // 9人目：信号が途切れて、音も消える
+    const f = $('#fade'); f.style.transition = 'none'; f.style.opacity = 1; f.innerHTML = '<span class="nosig">信号なし</span>';
+    $('#report').disabled = true; say(null); $('#monitor').style.transform = '';
+    if (AC && master){ master.gain.cancelScheduledValues(AC.currentTime); master.gain.setValueAtTime(0, AC.currentTime); }
+    setTimeout(showEnding, 2600);
+    return;
+  }
+  $('#fade').style.transition = 'opacity 2.5s'; $('#fade').style.opacity = 1;
+  $('#report').disabled = true; say(null);
+  if (AC && master){ master.gain.cancelScheduledValues(AC.currentTime); master.gain.setValueAtTime(master.gain.value, AC.currentTime); master.gain.linearRampToValueAtTime(0, AC.currentTime + 3); }
+  setTimeout(showEnding, 2800);
+}
+function showEnding(){
+  S.ended = true; S.running = false;
+  $('#game').classList.add('hidden');
+  const missed = S.anomalies.filter(a => !a.reported).length;
+  const total = S.anomalies.length;
+  $('#end-stat').textContent = `異常 ${total}件 ／ 報告 ${total - missed}件 ／ 見逃し ${missed}件` + (S.falseReports ? ` ／ 誤報 ${S.falseReports}件` : '');
+  let text;
+  if (LAST) text = 'あなたの前に、8人いました。';
+  else if (S.lookedAway) text = 'あなたは ' + S.awayTotal.toFixed(1) + '秒、目を離しました。<br>そのあいだ、それはずっとあなたを見ていました。';
+  else if (S.falseReports >= 3) text = 'モニターは、ひび割れて使えなくなりました。<br>次の人は、何も見えないまま座ることになります。';
+  else if (missed === 0) text = 'すべて報告しました。<br>でも、届いた報告は一件もありませんでした。';
+  else text = '見逃したものは、まだ4階に残っています。<br>次の人が、見つけてくれるかもしれません。';
+  $('#end-text').innerHTML = text;
+  // 引き継ぎ記録
+  const now = new Date();
+  const mine = [now.getHours(), now.getMinutes(), missed];
+  const logEl = $('#end-log');
+  if (LAST){
+    $('#end-head').textContent = '04:44　交代は、来ませんでした。';
+    logEl.hidden = false;
+    logEl.innerHTML = Array.from({ length: CYCLE - 1 }, (_, i) => ghostLabel(i)).join('<br>') +
+      '<br><span class="me">' + CYCLE + '人目　' + pad2(mine[0]) + ':' + pad2(mine[1]) + '　あなた</span>';
+    $('#end-chain').textContent = 'あなたが、9人目です。';
+    $('#end-hand').textContent = '次の人からは、また1人目に戻ります。';
+    $('#share-x').textContent = '「9人目だった」と伝える';
+  } else {
+    $('#end-head').textContent = '04:44　交代しました。';
+    const prev = chain.log.slice(-(POS - 1)), first = POS - prev.length;
+    const rows = [];
+    for (let n = 1; n < first; n++) rows.push(n + '人目　記録なし');
+    prev.forEach((r, i) => rows.push((first + i) + '人目　' + pad2(r[0]) + ':' + pad2(r[1]) + '　見逃し' + r[2] + '件'));
+    rows.push('<span class="me">' + POS + '人目　' + pad2(mine[0]) + ':' + pad2(mine[1]) + '　あなた</span>');
+    for (let n = POS + 1; n <= CYCLE; n++) rows.push(n + '人目　――');
+    logEl.hidden = false; logEl.innerHTML = rows.join('<br>');
+    $('#end-chain').innerHTML = 'あなたは ' + POS + '人目の担当者です。<br>9人目の担当者には、交代が来ません。　あと ' + (CYCLE - POS) + '人。';
+    $('#end-hand').textContent = 'このモニターは、次の人に引き継いでください。';
+    $('#share-x').textContent = 'Xで引き継ぐ';
+  }
+  const base = location.href.split('#')[0].split('?')[0];
+  const url = base + '?k=' + encChain({ n: chain.n + 1, log: LAST ? [] : chain.log.concat([mine]).slice(-(CYCLE - 1)) });
+  const msg = LAST
+    ? `深夜の警備バイト。\n私が9人目だった。\n交代は、来なかった。\n\n次の人から、また1人目。\n「4階、異常なし。」`
+    : `深夜の警備バイト。見逃した異常：${missed}件。\n私は${POS}人目。9人目まで、あと${CYCLE - POS}人。\n次の人に引き継ぎます。\n\n「4階、異常なし。」`;
+  $('#share-x').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(url) + '&hashtags=' + encodeURIComponent('4階異常なし');
+  if (navigator.share){ const b = $('#share-native'); b.hidden = false; b.onclick = () => navigator.share({ title:'4階、異常なし。', text: msg, url }).catch(() => {}); }
+  $('#share-copy').onclick = () => {
+    const done = () => { $('#toast').textContent = 'リンクをコピーしました。'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => fallbackCopy(url, done)); else fallbackCopy(url, done);
+  };
+  const end = $('#ending'); end.classList.remove('hidden');
+  end.querySelectorAll('.line').forEach(el => { el.classList.remove('on'); setTimeout(() => el.classList.add('on'), +el.dataset.d + 400); });
+  document.title = '4階、異常なし。';
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch(e){}
+  ta.remove();
+}
+$('#badge').textContent = '引き継ぎ No.' + String(chain.n).padStart(4, '0');
+$('#start').addEventListener('click', startGame);
+$('#again').addEventListener('click', startGame);
+
+
+</script>
+</body>
+</html>
